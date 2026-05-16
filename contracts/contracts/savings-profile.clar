@@ -16,3 +16,8 @@
   }
 )
 
+;; Public Functions
+(define-public (record-deposit (user principal) (amount uint))
+  (ok true)
+)
+
