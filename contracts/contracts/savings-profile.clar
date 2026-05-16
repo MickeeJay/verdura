@@ -25,3 +25,7 @@
   (ok true)
 )
 
+(define-public (get-profile (user principal))
+  (ok true)
+)
+
