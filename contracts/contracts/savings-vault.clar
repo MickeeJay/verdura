@@ -37,3 +37,7 @@
   (ok true)
 )
 
+(define-public (withdraw (vault-id uint))
+  (ok true)
+)
+
