@@ -9,3 +9,18 @@
 (define-constant err-insufficient-balance (err u105))
 (define-constant err-invalid-amount (err u106))
 (define-constant err-invalid-duration (err u107))
+
+;; Data Maps
+(define-map vaults
+  { owner: principal, vault-id: uint }
+  {
+    name: (string-ascii 64),
+    principal-amount: uint,
+    start-block: uint,
+    end-block: uint,
+    is-active: bool,
+    yield-enabled: bool,
+    yield-shares: uint
+  }
+)
+
