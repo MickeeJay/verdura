@@ -12,3 +12,8 @@
 ;; Data Variables
 (define-data-var router-paused bool false)
 
+;; Public Functions
+(define-public (route-to-yield (token principal) (amount uint))
+  (ok true)
+)
+
