@@ -21,3 +21,7 @@
   (ok true)
 )
 
+(define-public (record-withdrawal (user principal) (amount uint))
+  (ok true)
+)
+
