@@ -9,3 +9,6 @@
 ;; Data Maps
 (define-map supported-tokens principal bool)
 
+;; Data Variables
+(define-data-var router-paused bool false)
+
