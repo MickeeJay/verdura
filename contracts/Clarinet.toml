@@ -1,6 +1,6 @@
 [project]
-name = "contracts"
-description = ""
+name = "verdura-contracts"
+description = "Clarity smart contracts for Verdura: Bitcoin-backed commitment savings on Stacks"
 authors = []
 telemetry = false
 cache_dir = "./.cache"
