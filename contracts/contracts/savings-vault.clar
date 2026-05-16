@@ -41,3 +41,7 @@
   (ok true)
 )
 
+(define-public (get-vault (owner principal) (vault-id uint))
+  (ok true)
+)
+
