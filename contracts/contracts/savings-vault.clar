@@ -28,3 +28,8 @@
 (define-data-var next-vault-id uint u1)
 (define-data-var contract-owner principal tx-sender)
 
+;; Public Functions
+(define-public (create-vault (name (string-ascii 64)) (duration uint))
+  (ok true)
+)
+
