@@ -1,6 +1,7 @@
 # Verdura
 
 ![Status: In Development](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Lint: Passing](https://img.shields.io/badge/Lint-Passing-green)
 
 Verdura is a Bitcoin-backed commitment savings dApp built on Stacks (Bitcoin L2). Users lock stablecoins (USDCx / sBTC) into named, time-locked savings vaults, earn BTC-denominated yield via integrated Stacks DeFi protocols while their funds are locked, and build a verifiable on-chain savings history secured by Bitcoin. The product targets Nigerian and African stablecoin holders who currently hold idle USDT/USDC on exchanges earning zero yield.
 
