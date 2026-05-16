@@ -29,3 +29,7 @@
   (ok true)
 )
 
+(define-public (set-supported-token (token principal) (supported bool))
+  (ok true)
+)
+
