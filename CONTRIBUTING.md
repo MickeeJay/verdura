@@ -29,3 +29,27 @@ Format: `type(scope): description`
 - `chore`: Changes to the build process or auxiliary tools
 
 Example: `feat(frontend): add vault creation form`
+
+## Pull Request Checklist
+
+Before submitting a PR, please ensure:
+- [ ] Your code follows the project's coding standards.
+- [ ] You have performed a self-review of your code.
+- [ ] You have commented on your code, particularly in hard-to-understand areas.
+- [ ] Your changes generate no new linting errors or warnings.
+- [ ] Tests pass locally.
+- [ ] PR title follows conventional commit format.
+
+## Coding Standards
+
+### Frontend
+- Use TypeScript for all new code. Avoid `any`.
+- Follow the App Router patterns (Server Components by default).
+- Use Tailwind CSS for styling.
+- Components should be modular and stored in `src/components`.
+
+### Smart Contracts (Clarity)
+- Use descriptive names for variables and functions.
+- Include `asserts!` for all preconditions.
+- Keep functions small and focused on a single task.
+- Document all public functions.
