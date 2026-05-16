@@ -24,3 +24,7 @@
   }
 )
 
+;; Data Variables
+(define-data-var next-vault-id uint u1)
+(define-data-var contract-owner principal tx-sender)
+
