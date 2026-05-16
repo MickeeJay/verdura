@@ -25,3 +25,7 @@
   (ok u0)
 )
 
+(define-public (pause-router (paused bool))
+  (ok true)
+)
+
