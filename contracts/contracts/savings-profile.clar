@@ -29,3 +29,7 @@
   (ok true)
 )
 
+(define-public (get-total-saved (user principal))
+  (ok u0)
+)
+
