@@ -17,3 +17,7 @@
   (ok true)
 )
 
+(define-public (withdraw-from-yield (token principal) (amount uint))
+  (ok true)
+)
+
