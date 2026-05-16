@@ -45,3 +45,7 @@
   (ok true)
 )
 
+(define-public (get-vault-count)
+  (ok u0)
+)
+
