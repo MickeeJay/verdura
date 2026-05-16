@@ -33,3 +33,7 @@
   (ok true)
 )
 
+(define-public (deposit (vault-id uint) (amount uint))
+  (ok true)
+)
+
