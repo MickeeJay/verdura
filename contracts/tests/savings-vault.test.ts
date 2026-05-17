@@ -223,7 +223,7 @@ describe("savings-vault", () => {
       Cl.uint(1)
     ], wallet_1);
     
-    expect(result.result).toBeBool(false);
+    expect(result.result).toBeOk(Cl.bool(false));
   });
 
   it("should return true for is-vault-mature after maturity", () => {
@@ -241,6 +241,23 @@ describe("savings-vault", () => {
       Cl.uint(1)
     ], wallet_1);
     
-    expect(result.result).toBeBool(true);
+    expect(result.result).toBeOk(Cl.bool(true));
+  });
+
+  it("should return correct get-maturity-block", () => {
+    // Create a vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault Maturity"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    const result = simnet.callReadOnlyFn("savings-vault", "get-maturity-block", [
+      Cl.principal(wallet_1),
+      Cl.uint(1)
+    ], wallet_1);
+    
+    // start-block + duration = 2 + 144 = 146
+    expect(result.result).toBeOk(Cl.uint(146));
   });
 });
