@@ -21,7 +21,7 @@
   (ok true)
 )
 
-(define-public (get-yield-balance (token principal) (owner principal))
+(define-read-only (get-yield-balance (token principal) (owner principal))
   (ok u0)
 )
 

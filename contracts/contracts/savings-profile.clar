@@ -29,7 +29,7 @@
   (ok true)
 )
 
-(define-public (get-total-saved (user principal))
+(define-read-only (get-total-saved (user principal))
   (ok u0)
 )
 
