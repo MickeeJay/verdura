@@ -102,7 +102,7 @@
       (amount (get principal-amount vault))
       (caller tx-sender)
     )
-    (asserts! (get is-active vault) err-not-found) ;; or err-vault-matured
+    (asserts! (get is-active vault) err-vault-matured)
     (asserts! (>= block-height (get end-block vault)) err-vault-locked)
 
     (try! (as-contract (stx-transfer? amount tx-sender caller)))

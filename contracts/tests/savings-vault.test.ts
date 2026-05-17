@@ -171,4 +171,34 @@ describe("savings-vault", () => {
       "yield-shares": Cl.uint(0)
     }));
   });
+
+  it("should fail withdrawal from inactive vault", () => {
+    // 1. Create Vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Inactive Vault"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    // 2. Deposit
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(500)
+    ], wallet_1);
+
+    // 3. Advance Chain by duration blocks
+    simnet.mineEmptyBlocks(144);
+
+    // 4. First Withdraw (makes it inactive)
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+
+    // 5. Second Withdraw (should fail err-inactive-vault)
+    const withdrawResult = simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+    
+    expect(withdrawResult.result).toBeErr(Cl.uint(104)); // err-inactive-vault
+  });
 });
