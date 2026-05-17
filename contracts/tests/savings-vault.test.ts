@@ -54,6 +54,21 @@ describe("savings-vault", () => {
     expect(result.result).toBeErr(Cl.uint(102)); // err-not-found
   });
 
+  it("should fail deposit of zero amount", () => {
+    // Create a vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault Zero"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    const result = simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(0)
+    ], wallet_1);
+    expect(result.result).toBeErr(Cl.uint(106)); // err-invalid-amount
+  });
+
   it("should fail withdrawal before maturity", () => {
     // Create a vault
     simnet.callPublicFn("savings-vault", "create-vault", [
