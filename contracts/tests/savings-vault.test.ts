@@ -82,4 +82,53 @@ describe("savings-vault", () => {
     
     expect(withdrawResult.result).toBeOk(Cl.uint(100)); // returns amount
   });
+
+  it("should complete full vault lifecycle and verify final balance", () => {
+    const amount = 500;
+    
+    // 1. Create Vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Lifecycle Vault"),
+      Cl.uint(500),
+      Cl.bool(true)
+    ], wallet_1);
+
+    // 2. Deposit
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(amount)
+    ], wallet_1);
+
+    // Get balances before withdrawal
+    const address = simnet.getAccounts().get("wallet_1")!;
+    const balanceBefore = simnet.getAssetsMap().get("STX")?.get(address) ?? 0n;
+
+    // 3. Advance Chain by duration blocks
+    simnet.mineEmptyBlocks(500);
+
+    // 4. Withdraw
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+
+    // 5. Verify final balance (should have increased by `amount`)
+    const balanceAfter = simnet.getAssetsMap().get("STX")?.get(address) ?? 0n;
+    expect(balanceAfter - balanceBefore).toBe(BigInt(amount));
+
+    // Verify vault is marked inactive
+    const vault = simnet.callReadOnlyFn("savings-vault", "get-vault", [
+      Cl.principal(wallet_1),
+      Cl.uint(1)
+    ], wallet_1);
+    
+    expect(vault.result).toBeSome(Cl.tuple({
+      "name": Cl.stringAscii("Lifecycle Vault"),
+      "principal-amount": Cl.uint(500),
+      "start-block": Cl.uint(2), 
+      "end-block": Cl.uint(502),
+      "is-active": Cl.bool(false),
+      "yield-enabled": Cl.bool(true),
+      "yield-shares": Cl.uint(0)
+    }));
+  });
 });
