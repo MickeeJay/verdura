@@ -131,3 +131,9 @@
   (- (var-get next-vault-id) u1)
 )
 
+(define-read-only (get-maturity-block (owner principal) (vault-id uint))
+  (match (map-get? vaults { owner: owner, vault-id: vault-id })
+    vault (ok (get end-block vault))
+    err-not-found
+  )
+)
