@@ -127,7 +127,7 @@
   (map-get? vaults { owner: owner, vault-id: vault-id })
 )
 
-(define-public (get-vault-count)
-  (ok u0)
+(define-read-only (get-vault-count)
+  (- (var-get next-vault-id) u1)
 )
 
