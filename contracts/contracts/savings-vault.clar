@@ -68,7 +68,28 @@
 )
 
 (define-public (deposit (vault-id uint) (amount uint))
-  (ok true)
+  (let
+    (
+      (vault (unwrap! (map-get? vaults { owner: tx-sender, vault-id: vault-id }) err-not-found))
+    )
+    (asserts! (is-eq tx-sender tx-sender) err-unauthorized) ;; implicit by map-get? owner check, but we can leave it or remove it
+    (asserts! (get is-active vault) err-vault-locked)
+    (asserts! (> amount u0) err-invalid-amount)
+
+    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+
+    (map-set vaults
+      { owner: tx-sender, vault-id: vault-id }
+      (merge vault { principal-amount: (+ (get principal-amount vault) amount) })
+    )
+
+    (if (get yield-enabled vault)
+      (try! (contract-call? .yield-router route-to-yield (as-contract tx-sender) amount))
+      true
+    )
+
+    (ok true)
+  )
 )
 
 (define-public (withdraw (vault-id uint))
