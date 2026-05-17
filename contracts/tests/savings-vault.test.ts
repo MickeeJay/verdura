@@ -116,6 +116,13 @@ describe("savings-vault", () => {
     expect(withdrawResult.result).toBeOk(Cl.uint(100)); // returns amount
   });
 
+  it("should fail withdrawal from non-existent vault", () => {
+    const result = simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(999)
+    ], wallet_1);
+    expect(result.result).toBeErr(Cl.uint(102)); // err-not-found
+  });
+
   it("should complete full vault lifecycle and verify final balance", () => {
     const amount = 500;
     
