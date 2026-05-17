@@ -40,8 +40,30 @@
 (define-data-var contract-owner principal tx-sender)
 
 ;; Public Functions
-(define-public (create-vault (name (string-ascii 64)) (duration uint))
-  (ok true)
+(define-public (create-vault (name (string-ascii 64)) (duration-blocks uint) (yield-enabled bool))
+  (let
+    (
+      (vault-id (var-get next-vault-id))
+    )
+    (asserts! (is-eq contract-caller tx-sender) err-unauthorized)
+    (asserts! (> (len name) u0) err-invalid-amount)
+
+    (map-insert vaults
+      { owner: tx-sender, vault-id: vault-id }
+      {
+        name: name,
+        principal-amount: u0,
+        start-block: block-height,
+        end-block: (+ block-height duration-blocks),
+        is-active: true,
+        yield-enabled: yield-enabled,
+        yield-shares: u0
+      }
+    )
+    
+    (var-set next-vault-id (+ vault-id u1))
+    (ok vault-id)
+  )
 )
 
 (define-public (deposit (vault-id uint) (amount uint))
