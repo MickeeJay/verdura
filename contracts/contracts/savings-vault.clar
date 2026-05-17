@@ -47,6 +47,7 @@
     )
     (asserts! (is-eq contract-caller tx-sender) err-unauthorized)
     (asserts! (> (len name) u0) err-invalid-amount)
+    (asserts! (and (>= duration-blocks u144) (<= duration-blocks u52560)) err-invalid-duration)
 
     (map-insert vaults
       { owner: tx-sender, vault-id: vault-id }
