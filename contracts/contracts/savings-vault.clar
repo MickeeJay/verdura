@@ -123,8 +123,8 @@
   )
 )
 
-(define-public (get-vault (owner principal) (vault-id uint))
-  (ok true)
+(define-read-only (get-vault (owner principal) (vault-id uint))
+  (map-get? vaults { owner: owner, vault-id: vault-id })
 )
 
 (define-public (get-vault-count)
