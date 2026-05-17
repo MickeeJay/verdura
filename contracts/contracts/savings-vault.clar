@@ -92,8 +92,35 @@
   )
 )
 
+;; @post-condition: Vault is marked inactive.
+;; @post-condition: Principal amount (plus any yield) is transferred from contract to tx-sender.
+;; @post-condition: Profile record-withdrawal is called.
 (define-public (withdraw (vault-id uint))
-  (ok true)
+  (let
+    (
+      (vault (unwrap! (map-get? vaults { owner: tx-sender, vault-id: vault-id }) err-not-found))
+      (amount (get principal-amount vault))
+      (caller tx-sender)
+    )
+    (asserts! (get is-active vault) err-not-found) ;; or err-vault-matured
+    (asserts! (>= block-height (get end-block vault)) err-vault-locked)
+
+    (try! (as-contract (stx-transfer? amount tx-sender caller)))
+
+    (map-set vaults
+      { owner: caller, vault-id: vault-id }
+      (merge vault { is-active: false })
+    )
+
+    (if (get yield-enabled vault)
+      (try! (contract-call? .yield-router withdraw-from-yield (as-contract tx-sender) amount))
+      true
+    )
+
+    (try! (contract-call? .savings-profile record-withdrawal caller amount))
+
+    (ok amount)
+  )
 )
 
 (define-public (get-vault (owner principal) (vault-id uint))
