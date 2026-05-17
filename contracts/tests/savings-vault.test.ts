@@ -209,4 +209,20 @@ describe("savings-vault", () => {
     ], wallet_1);
     expect(vault.result).toBeNone();
   });
+
+  it("should return false for is-vault-mature before maturity", () => {
+    // Create a vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault Immature"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    const result = simnet.callReadOnlyFn("savings-vault", "is-vault-mature", [
+      Cl.principal(wallet_1),
+      Cl.uint(1)
+    ], wallet_1);
+    
+    expect(result.result).toBeBool(false);
+  });
 });
