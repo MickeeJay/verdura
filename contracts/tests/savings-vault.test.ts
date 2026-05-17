@@ -27,4 +27,12 @@ describe("savings-vault", () => {
     ], wallet_1);
     expect(result.result).toBeErr(Cl.uint(107)); // err-invalid-duration
   });
+
+  it("should fail deposit to non-existent vault", () => {
+    const result = simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(999), // non-existent vault-id
+      Cl.uint(1000)
+    ], wallet_1);
+    expect(result.result).toBeErr(Cl.uint(102)); // err-not-found
+  });
 });
