@@ -84,7 +84,7 @@
     )
 
     (if (get yield-enabled vault)
-      (try! (contract-call? .yield-router route-to-yield (as-contract tx-sender) amount))
+      (unwrap! (contract-call? .yield-router route-to-yield (as-contract tx-sender) amount) err-unauthorized)
       true
     )
 
@@ -113,11 +113,11 @@
     )
 
     (if (get yield-enabled vault)
-      (try! (contract-call? .yield-router withdraw-from-yield (as-contract tx-sender) amount))
+      (unwrap! (contract-call? .yield-router withdraw-from-yield (as-contract tx-sender) amount) err-unauthorized)
       true
     )
 
-    (try! (contract-call? .savings-profile record-withdrawal caller amount))
+    (unwrap! (contract-call? .savings-profile record-withdrawal caller amount) err-unauthorized)
 
     (ok amount)
   )
@@ -136,4 +136,29 @@
     vault (ok (get end-block vault))
     err-not-found
   )
+)
+
+(define-read-only (is-vault-mature (owner principal) (vault-id uint))
+  (match (map-get? vaults { owner: owner, vault-id: vault-id })
+    vault (ok (>= block-height (get end-block vault)))
+    err-not-found
+  )
+)
+
+(define-constant vault-ids-list 
+  (list u1 u2 u3 u4 u5 u6 u7 u8 u9 u10 u11 u12 u13 u14 u15 u16 u17 u18 u19 u20 u21 u22 u23 u24 u25 u26 u27 u28 u29 u30 u31 u32 u33 u34 u35 u36 u37 u38 u39 u40 u41 u42 u43 u44 u45 u46 u47 u48 u49 u50)
+)
+
+(define-private (accumulate-active-vault (vault-id uint) (state { owner: principal, active-vaults: (list 50 uint) }))
+  (match (map-get? vaults { owner: (get owner state), vault-id: vault-id })
+    vault (if (get is-active vault)
+            { owner: (get owner state), active-vaults: (unwrap-panic (as-max-len? (append (get active-vaults state) vault-id) u50)) }
+            state
+          )
+    state
+  )
+)
+
+(define-read-only (get-all-vaults-by-owner (owner principal))
+  (get active-vaults (fold accumulate-active-vault vault-ids-list { owner: owner, active-vaults: (list ) }))
 )
