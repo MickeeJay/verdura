@@ -260,4 +260,26 @@ describe("savings-vault", () => {
     // start-block + duration = 2 + 144 = 146
     expect(result.result).toBeOk(Cl.uint(146));
   });
+
+  it("should return correct get-all-vaults-by-owner", () => {
+    // Create vaults
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault A"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault B"),
+      Cl.uint(200),
+      Cl.bool(true)
+    ], wallet_1);
+
+    const result = simnet.callReadOnlyFn("savings-vault", "get-all-vaults-by-owner", [
+      Cl.principal(wallet_1)
+    ], wallet_1);
+    
+    // We expect a list containing two vault IDs: 1 and 2
+    expect(result.result).toBeList([Cl.uint(1), Cl.uint(2)]);
+  });
 });
