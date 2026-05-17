@@ -28,6 +28,15 @@ describe("savings-vault", () => {
     expect(result.result).toBeErr(Cl.uint(107)); // err-invalid-duration
   });
 
+  it("should fail create-vault with empty name", () => {
+    const result = simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii(""),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+    expect(result.result).toBeErr(Cl.uint(106)); // err-invalid-amount for empty name
+  });
+
   it("should fail deposit to non-existent vault", () => {
     const result = simnet.callPublicFn("savings-vault", "deposit", [
       Cl.uint(999), // non-existent vault-id
