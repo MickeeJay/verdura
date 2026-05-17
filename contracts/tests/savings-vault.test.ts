@@ -201,4 +201,12 @@ describe("savings-vault", () => {
     
     expect(withdrawResult.result).toBeErr(Cl.uint(104)); // err-inactive-vault
   });
+
+  it("should return none for get-vault on non-existent vault", () => {
+    const vault = simnet.callReadOnlyFn("savings-vault", "get-vault", [
+      Cl.principal(wallet_1),
+      Cl.uint(999)
+    ], wallet_1);
+    expect(vault.result).toBeNone();
+  });
 });
