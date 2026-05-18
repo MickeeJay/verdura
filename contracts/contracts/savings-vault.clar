@@ -89,6 +89,7 @@
               yield-shares: (+ (get yield-shares vault) shares)
             })
           )
+          (unwrap! (contract-call? .savings-profile record-deposit tx-sender vault-id amount) err-unauthorized)
           (ok true)
         )
       )
@@ -97,6 +98,7 @@
           { owner: tx-sender, vault-id: vault-id }
           (merge vault { principal-amount: (+ (get principal-amount vault) amount) })
         )
+        (unwrap! (contract-call? .savings-profile record-deposit tx-sender vault-id amount) err-unauthorized)
         (ok true)
       )
     )
