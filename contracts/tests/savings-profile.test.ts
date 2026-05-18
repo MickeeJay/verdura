@@ -9,4 +9,14 @@ describe("savings-profile", () => {
     const result = simnet.callReadOnlyFn("savings-profile", "get-total-saved", [Cl.principal(wallet_1)], wallet_1);
     expect(result.result).toBeOk(Cl.uint(0));
   });
+
+  it("should fail record-deposit if caller is not savings-vault", () => {
+    const result = simnet.callPublicFn(
+      "savings-profile",
+      "record-deposit",
+      [Cl.principal(wallet_1), Cl.uint(1), Cl.uint(100)],
+      wallet_1
+    );
+    expect(result.result).toBeErr(Cl.uint(300)); // err-unauthorized
+  });
 });
