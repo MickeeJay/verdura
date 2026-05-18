@@ -18,6 +18,9 @@
   }
 )
 
+;; Initialize supported tokens
+(map-set supported-tokens .savings-vault true)
+
 ;; Data Variables
 (define-data-var router-paused bool false)
 (define-data-var total-shares-issued uint u0)
