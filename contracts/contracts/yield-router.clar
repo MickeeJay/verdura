@@ -31,7 +31,24 @@
     (asserts! (not (var-get router-paused)) err-router-paused)
     (asserts! (> amount u0) err-zero-amount)
     (asserts! (default-to false (map-get? supported-tokens contract-caller)) err-unsupported-token)
-    (ok u0)
+    
+    ;; First accrue yield globally
+    (accrue-yield)
+    
+    (let
+      (
+        (total-shares (var-get total-shares-issued))
+        (total-assets (var-get total-assets-managed))
+        (shares-minted
+          (if (or (is-eq total-shares u0) (is-eq total-assets u0))
+            amount
+            (/ (* amount total-shares) total-assets)
+          )
+        )
+      )
+      
+      (ok shares-minted)
+    )
   )
 )
 
