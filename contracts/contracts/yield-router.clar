@@ -64,8 +64,19 @@
   )
 )
 
-(define-public (withdraw-from-yield (token principal) (amount uint))
-  (ok true)
+(define-public (withdraw-from-yield (vault-id uint) (owner principal))
+  (begin
+    (asserts! (not (var-get router-paused)) err-router-paused)
+    (asserts! (default-to false (map-get? supported-tokens contract-caller)) err-unsupported-token)
+    (let
+      (
+        (position (unwrap! (map-get? yield-positions { vault-id: vault-id, owner: owner }) err-zero-amount))
+        (shares (get shares position))
+      )
+      (asserts! (> shares u0) err-zero-amount)
+      (ok u0)
+    )
+  )
 )
 
 (define-private (accrue-yield)
