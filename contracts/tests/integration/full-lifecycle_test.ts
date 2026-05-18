@@ -128,5 +128,24 @@ describe("verdura-integration-tests", () => {
 
     const crossWithdraw2 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(2)], userC);
     expect(crossWithdraw2.result).toBeErr(Cl.uint(102));
+
+    // Advance block-height by 144 to mature all vaults
+    simnet.mineEmptyBlocks(144);
+
+    // Each user withdraws their own vaults successfully
+    const withdrawA1 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(1)], userA);
+    const withdrawA2 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(2)], userA);
+    expect(withdrawA1.result).toBeOk(Cl.uint(1000));
+    expect(withdrawA2.result).toBeOk(Cl.uint(2000));
+
+    const withdrawB1 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(3)], userB);
+    const withdrawB2 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(4)], userB);
+    expect(withdrawB1.result).toBeOk(Cl.uint(3000));
+    expect(withdrawB2.result).toBeOk(Cl.uint(4000));
+
+    const withdrawC1 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(5)], userC);
+    const withdrawC2 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(6)], userC);
+    expect(withdrawC1.result).toBeOk(Cl.uint(5000));
+    expect(withdrawC2.result).toBeOk(Cl.uint(6000));
   });
 });
