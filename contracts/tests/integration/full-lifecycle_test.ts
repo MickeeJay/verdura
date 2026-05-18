@@ -191,5 +191,16 @@ describe("verdura-integration-tests", () => {
       Cl.uint(1000)
     ], wallet_1);
     expect(depositAttempt.result).toBeErr(Cl.uint(100));
+
+    // 4. Resume the yield router
+    const resumeResult = simnet.callPublicFn("yield-router", "resume-router", [], deployer);
+    expect(resumeResult.result).toBeOk(Cl.bool(true));
+
+    // 5. Verify deposit now succeeds
+    const depositSuccess = simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+    expect(depositSuccess.result).toBeOk(Cl.bool(true));
   });
 });
