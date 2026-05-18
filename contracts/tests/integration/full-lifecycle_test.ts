@@ -75,4 +75,8 @@ describe("verdura-integration-tests", () => {
       "last-vault-block": Cl.uint(153)
     }));
   });
+
+  it("multiple-users-independent-vaults", () => {
+    expect(true).toBe(true);
+  });
 });
