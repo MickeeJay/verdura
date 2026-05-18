@@ -42,7 +42,7 @@
   )
 )
 
-(define-public (record-withdrawal (owner principal) (_vault-id uint) (_amount uint) (yield-earned uint))
+(define-public (record-withdrawal (owner principal) (vault-id uint) (amount uint) (yield-earned uint))
   (begin
     (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
     (let
