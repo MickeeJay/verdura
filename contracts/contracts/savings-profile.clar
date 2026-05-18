@@ -42,7 +42,7 @@
   )
 )
 
-(define-public (record-withdrawal (user principal) (amount uint))
+(define-public (record-withdrawal (owner principal) (vault-id uint) (amount uint) (yield-earned uint))
   (ok true)
 )
 
