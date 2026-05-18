@@ -130,8 +130,37 @@
   (/ (* amount blocks u8) u5256000)
 )
 
-(define-read-only (get-yield-balance (token principal) (owner principal))
-  (ok u0)
+(define-read-only (get-yield-balance (vault-id uint) (owner principal))
+  (match (map-get? yield-positions { vault-id: vault-id, owner: owner })
+    position (let
+      (
+        (shares (get shares position))
+        (total-shares (var-get total-shares-issued))
+        (last-block (var-get last-yield-block))
+        (current-assets (var-get total-assets-managed))
+        (accrued-assets
+          (if (is-eq last-block u0)
+            current-assets
+            (if (and (> block-height last-block) (> current-assets u0))
+              (let
+                (
+                  (elapsed-blocks (- block-height last-block))
+                  (yield-amount (simulate-yield current-assets elapsed-blocks))
+                )
+                (+ current-assets yield-amount)
+              )
+              current-assets
+            )
+          )
+        )
+      )
+      (if (is-eq total-shares u0)
+        (ok u0)
+        (ok (/ (* shares accrued-assets) total-shares))
+      )
+    )
+    (ok u0)
+  )
 )
 
 (define-public (pause-router)
