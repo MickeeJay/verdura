@@ -18,7 +18,7 @@
 )
 
 ;; Public Functions
-(define-public (record-deposit (owner principal) (vault-id uint) (amount uint))
+(define-public (record-deposit (owner principal) (_vault-id uint) (amount uint))
   (begin
     (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
     (match (map-get? profiles owner)
