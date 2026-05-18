@@ -48,3 +48,4 @@ Verdura is composed of a Next.js frontend and a set of Clarity smart contracts o
 - **Vault Manager**: Handles the creation, locking, and withdrawal of savings vaults.
 - **Yield Strategy Adapter**: Interfaces with Stacks DeFi protocols (like Alex or Zest) to generate BTC-denominated yield.
 - **Registry / DAO**: Manages global configuration, supported tokens, and protocol governance.
+- **Savings Profile Ledger (savings-profile.clar)**: Acts as an append-only ledger that stores user profile stats (e.g. member-since, total-saved, total-yield-earned, total-vaults-completed, last-vault-block) and calculates savings streaks and gamified leaderboard scores.
