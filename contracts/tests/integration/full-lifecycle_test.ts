@@ -266,4 +266,52 @@ describe("verdura-integration-tests", () => {
       "last-vault-block": Cl.uint(154)
     }));
   });
+
+  it("vault-id-increments-correctly", () => {
+    // 1. User A creates first vault -> gets ID 1
+    const v1 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("User A Vault 1"), Cl.uint(144), Cl.bool(false)], wallet_1);
+    expect(v1.result).toBeOk(Cl.uint(1));
+
+    // 2. User A creates second vault -> gets ID 2
+    const v2 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("User A Vault 2"), Cl.uint(144), Cl.bool(false)], wallet_1);
+    expect(v2.result).toBeOk(Cl.uint(2));
+
+    // 3. User B creates vault -> gets ID 3
+    const v3 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("User B Vault 1"), Cl.uint(144), Cl.bool(false)], wallet_2);
+    expect(v3.result).toBeOk(Cl.uint(3));
+
+    // 4. Verify maps isolation by retrieving vault details via get-vault
+    const details1 = simnet.callReadOnlyFn("savings-vault", "get-vault", [Cl.principal(wallet_1), Cl.uint(1)], wallet_1);
+    expect(details1.result).toBeSome(Cl.tuple({
+      "name": Cl.stringAscii("User A Vault 1"),
+      "start-block": Cl.uint(2),
+      "end-block": Cl.uint(146),
+      "principal-amount": Cl.uint(0),
+      "yield-enabled": Cl.bool(false),
+      "yield-shares": Cl.uint(0),
+      "is-active": Cl.bool(true)
+    }));
+
+    const details2 = simnet.callReadOnlyFn("savings-vault", "get-vault", [Cl.principal(wallet_1), Cl.uint(2)], wallet_1);
+    expect(details2.result).toBeSome(Cl.tuple({
+      "name": Cl.stringAscii("User A Vault 2"),
+      "start-block": Cl.uint(3),
+      "end-block": Cl.uint(147),
+      "principal-amount": Cl.uint(0),
+      "yield-enabled": Cl.bool(false),
+      "yield-shares": Cl.uint(0),
+      "is-active": Cl.bool(true)
+    }));
+
+    const details3 = simnet.callReadOnlyFn("savings-vault", "get-vault", [Cl.principal(wallet_2), Cl.uint(3)], wallet_2);
+    expect(details3.result).toBeSome(Cl.tuple({
+      "name": Cl.stringAscii("User B Vault 1"),
+      "start-block": Cl.uint(4),
+      "end-block": Cl.uint(148),
+      "principal-amount": Cl.uint(0),
+      "yield-enabled": Cl.bool(false),
+      "yield-shares": Cl.uint(0),
+      "is-active": Cl.bool(true)
+    }));
+  });
 });
