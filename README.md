@@ -57,6 +57,8 @@ The core savings and yield-bearing mechanics are implemented in three key Clarit
 - **`savings-vault.clar`**: Manages time-locked savings positions, enforcing lock durations and routing funds to the Yield Router.
 - **`yield-router.clar`**: Implements a high-performance share-token accounting system that dynamically compounds a global 8% APY yield.
 - **`savings-profile.clar`**: Records user savings history and highlights achievements to build a verifiable on-chain financial profile.
+  - *Gamified Leaderboard Score*: Calculated using a custom weighting: `(+ (* total-vaults-completed 100) (/ total-saved 1000))`.
+  - *Savings Streak*: Approximates a 30-day window (4320 blocks) after vault completion to maintain active savings habits.
 
 ### Running Contract Tests
 To run the Vitest simnet unit and integration test suite:
