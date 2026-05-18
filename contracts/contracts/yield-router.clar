@@ -77,7 +77,11 @@
 )
 
 (define-public (set-supported-token (token principal) (supported bool))
-  (ok true)
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-unauthorized)
+    (map-set supported-tokens token supported)
+    (ok true)
+  )
 )
 
 (define-read-only (get-router-stats)
