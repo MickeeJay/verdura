@@ -42,5 +42,15 @@ describe("verdura-integration-tests", () => {
       "total-assets": Cl.uint(amount),
       "is-paused": Cl.bool(false)
     });
+
+    // 3. Advance chain by vault duration
+    simnet.mineEmptyBlocks(duration + 4);
+
+    // Verify yield balance (expected yield: 10000 * 148 * 8 / 5256000 = 2, so total = 10002)
+    const yieldBalance = simnet.callReadOnlyFn("yield-router", "get-yield-balance", [
+      Cl.uint(vaultId),
+      Cl.principal(wallet_1)
+    ], wallet_1);
+    expect(yieldBalance.result).toBeOk(Cl.uint(10002));
   });
 });
