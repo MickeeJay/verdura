@@ -128,7 +128,7 @@
           { owner: caller, vault-id: vault-id }
           (merge vault { is-active: false, yield-shares: u0 })
         )
-        (unwrap! (contract-call? .savings-profile record-withdrawal caller amount-redeemed) err-unauthorized)
+        (unwrap! (contract-call? .savings-profile record-withdrawal caller vault-id amount (- amount-redeemed amount)) err-unauthorized)
         (ok amount-redeemed)
       )
       (begin
@@ -137,7 +137,7 @@
           { owner: caller, vault-id: vault-id }
           (merge vault { is-active: false })
         )
-        (unwrap! (contract-call? .savings-profile record-withdrawal caller amount) err-unauthorized)
+        (unwrap! (contract-call? .savings-profile record-withdrawal caller vault-id amount u0) err-unauthorized)
         (ok amount)
       )
     )
