@@ -18,5 +18,14 @@ describe("verdura-integration-tests", () => {
     // Record initial balance
     const balanceBefore = simnet.getAssetsMap().get("STX")?.get(wallet_1) || 0n;
     expect(balanceBefore).toBeGreaterThan(0n);
+
+    // 1. Create a vault with yield enabled
+    const createResult = simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Yield Savings Vault"),
+      Cl.uint(duration),
+      Cl.bool(true)
+    ], wallet_1);
+    expect(createResult.result).toBeOk(Cl.uint(1));
+    const vaultId = 1;
   });
 });
