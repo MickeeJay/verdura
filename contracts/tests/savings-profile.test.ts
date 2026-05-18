@@ -133,4 +133,38 @@ describe("savings-profile", () => {
       "last-vault-block": Cl.uint(0)
     }));
   });
+
+  it("should record withdrawal, increment counters, and update last-vault-block", () => {
+    // 1. Create vault 1
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Withdraw Vault"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+
+    // 2. Deposit
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+
+    // 3. Mine 144 blocks
+    simnet.mineEmptyBlocks(144);
+
+    // 4. Withdraw
+    const withdrawResult = simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+    expect(withdrawResult.result).toBeOk(Cl.uint(1000));
+
+    // 5. Verify profile has completed vaults = 1 and last-vault-block is updated
+    const profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
+    expect(profile.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(1),
+      "total-saved": Cl.uint(1000),
+      "total-yield-earned": Cl.uint(0),
+      "member-since": Cl.uint(3), // creation block 2, deposit block 3
+      "last-vault-block": Cl.uint(simnet.blockHeight)
+    }));
+  });
 });
