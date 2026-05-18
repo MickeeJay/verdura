@@ -9,6 +9,15 @@
 ;; Data Maps
 (define-map supported-tokens principal bool)
 
+(define-map yield-positions
+  { vault-id: uint, owner: principal }
+  {
+    shares: uint,
+    deposited-amount: uint,
+    deposit-block: uint
+  }
+)
+
 ;; Data Variables
 (define-data-var router-paused bool false)
 
