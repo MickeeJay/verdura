@@ -220,5 +220,50 @@ describe("verdura-integration-tests", () => {
     expect(d1.result).toBeOk(Cl.bool(true));
     expect(d2.result).toBeOk(Cl.bool(true));
     expect(d3.result).toBeOk(Cl.bool(true));
+
+    // 3. Mature vaults
+    simnet.mineEmptyBlocks(144);
+
+    // 4. Complete first vault (withdraw)
+    const w1 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(1)], wallet_1);
+    expect(w1.result).toBeOk(Cl.uint(1000));
+
+    // Verify profile stats after first completion
+    let profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
+    expect(profile.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(1),
+      "total-saved": Cl.uint(6000),
+      "total-yield-earned": Cl.uint(0),
+      "member-since": Cl.uint(5),
+      "last-vault-block": Cl.uint(152)
+    }));
+
+    // 5. Complete second vault
+    const w2 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(2)], wallet_1);
+    expect(w2.result).toBeOk(Cl.uint(2000));
+
+    // Verify accumulated profile stats after second completion
+    profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
+    expect(profile.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(2),
+      "total-saved": Cl.uint(6000),
+      "total-yield-earned": Cl.uint(0),
+      "member-since": Cl.uint(5),
+      "last-vault-block": Cl.uint(153)
+    }));
+
+    // 6. Complete third vault
+    const w3 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(3)], wallet_1);
+    expect(w3.result).toBeOk(Cl.uint(3000));
+
+    // Verify final accumulated profile stats
+    profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
+    expect(profile.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(3),
+      "total-saved": Cl.uint(6000),
+      "total-yield-earned": Cl.uint(0),
+      "member-since": Cl.uint(5),
+      "last-vault-block": Cl.uint(154)
+    }));
   });
 });
