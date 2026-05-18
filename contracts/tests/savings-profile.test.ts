@@ -29,4 +29,14 @@ describe("savings-profile", () => {
     );
     expect(result.result).toBeErr(Cl.uint(300)); // err-unauthorized
   });
+
+  it("should return none for get-profile on a non-existent profile", () => {
+    const result = simnet.callReadOnlyFn(
+      "savings-profile",
+      "get-profile",
+      [Cl.principal(wallet_1)],
+      wallet_1
+    );
+    expect(result.result).toBeNone();
+  });
 });
