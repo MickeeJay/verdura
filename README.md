@@ -51,6 +51,20 @@ npm run lint
 npm run build
 ```
 
+## Smart Contracts & Yield Routing
+
+The core savings and yield-bearing mechanics are implemented in three key Clarity contracts:
+- **`savings-vault.clar`**: Manages time-locked savings positions, enforcing lock durations and routing funds to the Yield Router.
+- **`yield-router.clar`**: Implements a high-performance share-token accounting system that dynamically compounds a global 8% APY yield.
+- **`savings-profile.clar`**: Records user savings history and highlights achievements to build a verifiable on-chain financial profile.
+
+### Running Contract Tests
+To run the Vitest simnet unit and integration test suite:
+```bash
+cd contracts
+npm test
+```
+
 ## License
 
 MIT
