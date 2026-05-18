@@ -21,6 +21,23 @@
 (define-public (record-deposit (owner principal) (vault-id uint) (amount uint))
   (begin
     (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
+    (match (map-get? profiles owner)
+      profile
+      (map-set profiles owner
+        (merge profile {
+          total-saved: (+ (get total-saved profile) amount)
+        })
+      )
+      (map-set profiles owner
+        {
+          total-vaults-completed: u0,
+          total-saved: amount,
+          total-yield-earned: u0,
+          member-since: block-height,
+          last-vault-block: u0
+        }
+      )
+    )
     (ok true)
   )
 )
