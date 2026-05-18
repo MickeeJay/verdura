@@ -9,7 +9,14 @@ const deployer = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
 
 describe("verdura-integration-tests", () => {
   it("user-creates-vault-deposits-and-withdraws-with-yield", () => {
-    // Basic shell
-    expect(true).toBe(true);
+    const amount = 10000; // 10000 micro-STX
+    const duration = 144;
+
+    // Seed the yield router contract with STX to fund yield payouts
+    simnet.transferSTX(100000, `${deployer}.yield-router`, wallet_1);
+
+    // Record initial balance
+    const balanceBefore = simnet.getAssetsMap().get("STX")?.get(wallet_1) || 0n;
+    expect(balanceBefore).toBeGreaterThan(0n);
   });
 });
