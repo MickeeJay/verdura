@@ -167,4 +167,28 @@ describe("savings-profile", () => {
       "last-vault-block": Cl.uint(simnet.blockHeight)
     }));
   });
+
+  it("should calculate active savings streak correctly", () => {
+    // 1. Create vault and deposit
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Streak Vault"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+
+    // 2. Mine blocks and withdraw
+    simnet.mineEmptyBlocks(144);
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+
+    // 3. Verify streak is 1
+    const streakResult = simnet.callReadOnlyFn("savings-profile", "get-savings-streak", [Cl.principal(wallet_1)], wallet_1);
+    expect(streakResult.result).toBeUint(1);
+  });
 });
