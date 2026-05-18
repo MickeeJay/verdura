@@ -34,6 +34,36 @@
   (ok true)
 )
 
+(define-private (accrue-yield)
+  (let
+    (
+      (last-block (var-get last-yield-block))
+      (current-assets (var-get total-assets-managed))
+    )
+    (if (is-eq last-block u0)
+      (begin
+        (var-set last-yield-block block-height)
+        true
+      )
+      (if (and (> block-height last-block) (> current-assets u0))
+        (let
+          (
+            (elapsed-blocks (- block-height last-block))
+            (yield-amount (simulate-yield current-assets elapsed-blocks))
+          )
+          (var-set total-assets-managed (+ current-assets yield-amount))
+          (var-set last-yield-block block-height)
+          true
+        )
+        (begin
+          (var-set last-yield-block block-height)
+          true
+        )
+      )
+    )
+  )
+)
+
 (define-read-only (simulate-yield (amount uint) (blocks uint))
   (/ (* amount blocks u8) u5256000)
 )
