@@ -77,6 +77,17 @@ describe("verdura-integration-tests", () => {
   });
 
   it("multiple-users-independent-vaults", () => {
-    expect(true).toBe(true);
+    const userA = wallet_1;
+    const userB = wallet_2;
+    const userC = wallet_3;
+
+    // Record initial balance for all three users
+    const balA = simnet.getAssetsMap().get("STX")?.get(userA) || 0n;
+    const balB = simnet.getAssetsMap().get("STX")?.get(userB) || 0n;
+    const balC = simnet.getAssetsMap().get("STX")?.get(userC) || 0n;
+
+    expect(balA).toBeGreaterThan(0n);
+    expect(balB).toBeGreaterThan(0n);
+    expect(balC).toBeGreaterThan(0n);
   });
 });
