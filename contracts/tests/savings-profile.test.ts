@@ -69,4 +69,32 @@ describe("savings-profile", () => {
     );
     expect(result.result).toBeUint(0);
   });
+
+  it("should create a new profile upon the first deposit", () => {
+    // 1. Create a vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault 1"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+
+    // 2. Deposit
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+
+    // 3. Verify profile is created
+    const isMember = simnet.callReadOnlyFn("savings-profile", "is-member", [Cl.principal(wallet_1)], wallet_1);
+    expect(isMember.result).toBeBool(true);
+
+    const profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
+    expect(profile.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(0),
+      "total-saved": Cl.uint(1000),
+      "total-yield-earned": Cl.uint(0),
+      "member-since": Cl.uint(simnet.blockHeight),
+      "last-vault-block": Cl.uint(0)
+    }));
+  });
 });
