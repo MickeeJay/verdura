@@ -164,5 +164,11 @@ describe("verdura-integration-tests", () => {
       Cl.uint(5000)
     ], wallet_1);
     expect(depositResult.result).toBeOk(Cl.bool(true));
+
+    // 3. Attempt withdrawal before end-block -> fails with err-vault-locked (u103)
+    const prematureWithdraw = simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+    expect(prematureWithdraw.result).toBeErr(Cl.uint(103));
   });
 });
