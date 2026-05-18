@@ -150,6 +150,19 @@ describe("verdura-integration-tests", () => {
   });
 
   it("early-withdrawal-blocked", () => {
-    expect(true).toBe(true);
+    // 1. Create a vault
+    const createResult = simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Early Block Vault"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+    expect(createResult.result).toBeOk(Cl.uint(1));
+
+    // 2. Deposit STX
+    const depositResult = simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(5000)
+    ], wallet_1);
+    expect(depositResult.result).toBeOk(Cl.bool(true));
   });
 });
