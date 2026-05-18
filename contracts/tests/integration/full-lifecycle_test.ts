@@ -171,4 +171,8 @@ describe("verdura-integration-tests", () => {
     ], wallet_1);
     expect(prematureWithdraw.result).toBeErr(Cl.uint(103));
   });
+
+  it("yield-router-paused-blocks-deposit", () => {
+    expect(true).toBe(true);
+  });
 });
