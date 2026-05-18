@@ -39,4 +39,14 @@ describe("savings-profile", () => {
     );
     expect(result.result).toBeNone();
   });
+
+  it("should return false for is-member on a non-existent profile", () => {
+    const result = simnet.callReadOnlyFn(
+      "savings-profile",
+      "is-member",
+      [Cl.principal(wallet_1)],
+      wallet_1
+    );
+    expect(result.result).toBeBool(false);
+  });
 });
