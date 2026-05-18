@@ -38,3 +38,11 @@
   (is-some (map-get? profiles owner))
 )
 
+(define-read-only (get-leaderboard-score (owner principal))
+  (match (map-get? profiles owner)
+    profile
+    (+ (* (get total-vaults-completed profile) u100) (/ (get total-saved profile) u1000))
+    u0
+  )
+)
+
