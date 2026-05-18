@@ -19,4 +19,14 @@ describe("savings-profile", () => {
     );
     expect(result.result).toBeErr(Cl.uint(300)); // err-unauthorized
   });
+
+  it("should fail record-withdrawal if caller is not savings-vault", () => {
+    const result = simnet.callPublicFn(
+      "savings-profile",
+      "record-withdrawal",
+      [Cl.principal(wallet_1), Cl.uint(1), Cl.uint(100), Cl.uint(0)],
+      wallet_1
+    );
+    expect(result.result).toBeErr(Cl.uint(300)); // err-unauthorized
+  });
 });
