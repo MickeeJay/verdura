@@ -121,5 +121,12 @@ describe("verdura-integration-tests", () => {
     const depC2 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(6), Cl.uint(6000)], userC);
     expect(depC1.result).toBeOk(Cl.bool(true));
     expect(depC2.result).toBeOk(Cl.bool(true));
+
+    // Verify cross-user withdrawal is blocked (user B cannot withdraw user A's vault)
+    const crossWithdraw = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(1)], userB);
+    expect(crossWithdraw.result).toBeErr(Cl.uint(102));
+
+    const crossWithdraw2 = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(2)], userC);
+    expect(crossWithdraw2.result).toBeErr(Cl.uint(102));
   });
 });
