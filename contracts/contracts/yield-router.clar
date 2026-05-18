@@ -20,6 +20,8 @@
 
 ;; Data Variables
 (define-data-var router-paused bool false)
+(define-data-var total-shares-issued uint u0)
+(define-data-var total-assets-managed uint u0)
 
 ;; Public Functions
 (define-public (route-to-yield (token principal) (amount uint))
