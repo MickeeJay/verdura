@@ -34,3 +34,7 @@
   (ok u0)
 )
 
+(define-read-only (is-member (owner principal))
+  (is-some (map-get? profiles owner))
+)
+
