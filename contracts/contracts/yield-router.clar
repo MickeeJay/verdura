@@ -45,8 +45,20 @@
             (/ (* amount total-shares) total-assets)
           )
         )
+        (existing-position (default-to { shares: u0, deposited-amount: u0, deposit-block: u0 } (map-get? yield-positions { vault-id: vault-id, owner: owner })))
+        (new-shares (+ (get shares existing-position) shares-minted))
+        (new-deposited (+ (get deposited-amount existing-position) amount))
       )
-      
+      (map-set yield-positions
+        { vault-id: vault-id, owner: owner }
+        {
+          shares: new-shares,
+          deposited-amount: new-deposited,
+          deposit-block: block-height
+        }
+      )
+      (var-set total-shares-issued (+ total-shares shares-minted))
+      (var-set total-assets-managed (+ total-assets amount))
       (ok shares-minted)
     )
   )
