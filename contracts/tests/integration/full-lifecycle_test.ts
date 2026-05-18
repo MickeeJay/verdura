@@ -105,5 +105,21 @@ describe("verdura-integration-tests", () => {
     const createC2 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault C2"), Cl.uint(144), Cl.bool(false)], userC);
     expect(createC1.result).toBeOk(Cl.uint(5));
     expect(createC2.result).toBeOk(Cl.uint(6));
+
+    // Deposit STX into each vault
+    const depA1 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(1), Cl.uint(1000)], userA);
+    const depA2 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(2), Cl.uint(2000)], userA);
+    expect(depA1.result).toBeOk(Cl.bool(true));
+    expect(depA2.result).toBeOk(Cl.bool(true));
+
+    const depB1 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(3), Cl.uint(3000)], userB);
+    const depB2 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(4), Cl.uint(4000)], userB);
+    expect(depB1.result).toBeOk(Cl.bool(true));
+    expect(depB2.result).toBeOk(Cl.bool(true));
+
+    const depC1 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(5), Cl.uint(5000)], userC);
+    const depC2 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(6), Cl.uint(6000)], userC);
+    expect(depC1.result).toBeOk(Cl.bool(true));
+    expect(depC2.result).toBeOk(Cl.bool(true));
   });
 });
