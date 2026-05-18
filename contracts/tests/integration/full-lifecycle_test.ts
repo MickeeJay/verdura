@@ -205,6 +205,20 @@ describe("verdura-integration-tests", () => {
   });
 
   it("profile-stats-accumulate-across-vaults", () => {
-    expect(true).toBe(true);
+    // 1. Create three vaults
+    const c1 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault 1"), Cl.uint(144), Cl.bool(false)], wallet_1);
+    const c2 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault 2"), Cl.uint(144), Cl.bool(false)], wallet_1);
+    const c3 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault 3"), Cl.uint(144), Cl.bool(false)], wallet_1);
+    expect(c1.result).toBeOk(Cl.uint(1));
+    expect(c2.result).toBeOk(Cl.uint(2));
+    expect(c3.result).toBeOk(Cl.uint(3));
+
+    // 2. Deposit into each vault
+    const d1 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(1), Cl.uint(1000)], wallet_1);
+    const d2 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(2), Cl.uint(2000)], wallet_1);
+    const d3 = simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(3), Cl.uint(3000)], wallet_1);
+    expect(d1.result).toBeOk(Cl.bool(true));
+    expect(d2.result).toBeOk(Cl.bool(true));
+    expect(d3.result).toBeOk(Cl.bool(true));
   });
 });
