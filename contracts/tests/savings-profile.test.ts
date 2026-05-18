@@ -218,4 +218,28 @@ describe("savings-profile", () => {
     const streakResult = simnet.callReadOnlyFn("savings-profile", "get-savings-streak", [Cl.principal(wallet_1)], wallet_1);
     expect(streakResult.result).toBeUint(0);
   });
+
+  it("should verify leaderboard score formula matches exactly", () => {
+    // 1. Create vault and deposit
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Leaderboard Vault"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(10000)
+    ], wallet_1);
+
+    // 2. Mine blocks and withdraw
+    simnet.mineEmptyBlocks(144);
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+
+    // 3. Verify leaderboard score matches formula
+    const scoreResult = simnet.callReadOnlyFn("savings-profile", "get-leaderboard-score", [Cl.principal(wallet_1)], wallet_1);
+    expect(scoreResult.result).toBeUint(110);
+  });
 });
