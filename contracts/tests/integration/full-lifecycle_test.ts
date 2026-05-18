@@ -89,5 +89,21 @@ describe("verdura-integration-tests", () => {
     expect(balA).toBeGreaterThan(0n);
     expect(balB).toBeGreaterThan(0n);
     expect(balC).toBeGreaterThan(0n);
+
+    // Create 2 vaults for each user
+    const createA1 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault A1"), Cl.uint(144), Cl.bool(false)], userA);
+    const createA2 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault A2"), Cl.uint(144), Cl.bool(false)], userA);
+    expect(createA1.result).toBeOk(Cl.uint(1));
+    expect(createA2.result).toBeOk(Cl.uint(2));
+
+    const createB1 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault B1"), Cl.uint(144), Cl.bool(false)], userB);
+    const createB2 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault B2"), Cl.uint(144), Cl.bool(false)], userB);
+    expect(createB1.result).toBeOk(Cl.uint(3));
+    expect(createB2.result).toBeOk(Cl.uint(4));
+
+    const createC1 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault C1"), Cl.uint(144), Cl.bool(false)], userC);
+    const createC2 = simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault C2"), Cl.uint(144), Cl.bool(false)], userC);
+    expect(createC1.result).toBeOk(Cl.uint(5));
+    expect(createC2.result).toBeOk(Cl.uint(6));
   });
 });
