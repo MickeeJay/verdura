@@ -12,7 +12,8 @@
     total-vaults-completed: uint,
     total-saved: uint,
     total-yield-earned: uint,
-    member-since: uint
+    member-since: uint,
+    last-vault-block: uint
   }
 )
 
