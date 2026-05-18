@@ -184,5 +184,12 @@ describe("verdura-integration-tests", () => {
     // 2. Pause the yield router from the deployer (contract owner)
     const pauseResult = simnet.callPublicFn("yield-router", "pause-router", [], deployer);
     expect(pauseResult.result).toBeOk(Cl.bool(true));
+
+    // 3. Attempt deposit into yield-enabled vault -> fails with err-unauthorized (u100)
+    const depositAttempt = simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+    expect(depositAttempt.result).toBeErr(Cl.uint(100));
   });
 });
