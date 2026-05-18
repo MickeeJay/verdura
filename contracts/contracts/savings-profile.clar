@@ -43,7 +43,10 @@
 )
 
 (define-public (record-withdrawal (owner principal) (vault-id uint) (amount uint) (yield-earned uint))
-  (ok true)
+  (begin
+    (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
+    (ok true)
+  )
 )
 
 (define-read-only (get-profile (owner principal))
