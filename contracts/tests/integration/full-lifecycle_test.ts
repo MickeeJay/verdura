@@ -52,5 +52,15 @@ describe("verdura-integration-tests", () => {
       Cl.principal(wallet_1)
     ], wallet_1);
     expect(yieldBalance.result).toBeOk(Cl.uint(10002));
+
+    // 4. Withdraw principal + yield
+    const withdrawResult = simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(vaultId)
+    ], wallet_1);
+    expect(withdrawResult.result).toBeOk(Cl.uint(10002));
+
+    // Verify net balance change (deposited 10000, got back 10002, net change = 2)
+    const balanceAfter = simnet.getAssetsMap().get("STX")?.get(wallet_1) || 0n;
+    expect(balanceAfter - balanceBefore).toBe(2n);
   });
 });
