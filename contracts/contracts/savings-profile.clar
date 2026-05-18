@@ -18,7 +18,7 @@
 )
 
 ;; Public Functions
-(define-public (record-deposit (user principal) (amount uint))
+(define-public (record-deposit (owner principal) (vault-id uint) (amount uint))
   (ok true)
 )
 
