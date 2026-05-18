@@ -242,4 +242,76 @@ describe("savings-profile", () => {
     const scoreResult = simnet.callReadOnlyFn("savings-profile", "get-leaderboard-score", [Cl.principal(wallet_1)], wallet_1);
     expect(scoreResult.result).toBeUint(110);
   });
+
+  it("should simulate 3 vault completions and verify cumulative stats", () => {
+    // 1. Create 3 vaults
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault 1"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault 2"),
+      Cl.uint(200),
+      Cl.bool(false)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault 3"),
+      Cl.uint(300),
+      Cl.bool(false)
+    ], wallet_1);
+
+    // 2. Deposit to all of them
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(2),
+      Cl.uint(2000)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(3),
+      Cl.uint(3000)
+    ], wallet_1);
+
+    // 3. Complete Vault 1: mine 144 blocks, withdraw
+    simnet.mineEmptyBlocks(144);
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+
+    // 4. Complete Vault 2: mine 56 more blocks (total 200 blocks since start), withdraw
+    simnet.mineEmptyBlocks(56);
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(2)
+    ], wallet_1);
+
+    // 5. Complete Vault 3: mine 100 more blocks (total 300 blocks since start), withdraw
+    simnet.mineEmptyBlocks(100);
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(3)
+    ], wallet_1);
+
+    // 6. Verify final profile cumulative stats
+    const profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
+    expect(profile.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(3),
+      "total-saved": Cl.uint(6000),
+      "total-yield-earned": Cl.uint(0),
+      "member-since": Cl.uint(5), // first deposit at block height 5
+      "last-vault-block": Cl.uint(simnet.blockHeight)
+    }));
+
+    // Verify streak and score
+    const streakResult = simnet.callReadOnlyFn("savings-profile", "get-savings-streak", [Cl.principal(wallet_1)], wallet_1);
+    expect(streakResult.result).toBeUint(3);
+
+    const scoreResult = simnet.callReadOnlyFn("savings-profile", "get-leaderboard-score", [Cl.principal(wallet_1)], wallet_1);
+    expect(scoreResult.result).toBeUint(306);
+  });
 });
