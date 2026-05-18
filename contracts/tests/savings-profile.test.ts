@@ -49,4 +49,14 @@ describe("savings-profile", () => {
     );
     expect(result.result).toBeBool(false);
   });
+
+  it("should return zero for get-leaderboard-score on a non-existent profile", () => {
+    const result = simnet.callReadOnlyFn(
+      "savings-profile",
+      "get-leaderboard-score",
+      [Cl.principal(wallet_1)],
+      wallet_1
+    );
+    expect(result.result).toBeUint(0);
+  });
 });
