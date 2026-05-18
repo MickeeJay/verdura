@@ -81,6 +81,16 @@
       )
       (asserts! (> shares u0) err-zero-amount)
       
+      ;; Transfer STX from yield-router to savings-vault (contract-caller)
+      (try! (as-contract (stx-transfer? redemption-amount tx-sender contract-caller)))
+      
+      ;; Delete position
+      (map-delete yield-positions { vault-id: vault-id, owner: owner })
+      
+      ;; Burn shares globally
+      (var-set total-shares-issued (- total-shares shares))
+      (var-set total-assets-managed (- total-assets redemption-amount))
+      
       (ok redemption-amount)
     )
   )
