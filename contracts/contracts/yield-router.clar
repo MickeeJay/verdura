@@ -34,6 +34,10 @@
   (ok true)
 )
 
+(define-read-only (simulate-yield (amount uint) (blocks uint))
+  (/ (* amount blocks u8) u5256000)
+)
+
 (define-read-only (get-yield-balance (token principal) (owner principal))
   (ok u0)
 )
