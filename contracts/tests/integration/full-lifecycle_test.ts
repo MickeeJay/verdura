@@ -62,5 +62,17 @@ describe("verdura-integration-tests", () => {
     // Verify net balance change (deposited 10000, got back 10002, net change = 2)
     const balanceAfter = simnet.getAssetsMap().get("STX")?.get(wallet_1) || 0n;
     expect(balanceAfter - balanceBefore).toBe(2n);
+
+    // Verify profile stats are updated
+    const profileResult = simnet.callReadOnlyFn("savings-profile", "get-profile", [
+      Cl.principal(wallet_1)
+    ], wallet_1);
+    expect(profileResult.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(1),
+      "total-saved": Cl.uint(amount),
+      "total-yield-earned": Cl.uint(2),
+      "member-since": Cl.uint(4),
+      "last-vault-block": Cl.uint(153)
+    }));
   });
 });
