@@ -125,12 +125,12 @@ describe("savings-profile", () => {
 
     // 3. Verify total-saved is now 1500
     const profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
-    expect(profile.result).toBeSome();
-    const data: any = (profile.result as any).value.data;
-    expect(data["total-vaults-completed"]).toBeUint(0);
-    expect(data["total-saved"]).toBeUint(1500);
-    expect(data["total-yield-earned"]).toBeUint(0);
-    expect(data["last-vault-block"]).toBeUint(0);
-    expect(data["member-since"]).toBeUint(3); // first deposit at block 3
+    expect(profile.result).toBeSome(Cl.tuple({
+      "total-vaults-completed": Cl.uint(0),
+      "total-saved": Cl.uint(1500),
+      "total-yield-earned": Cl.uint(0),
+      "member-since": Cl.uint(3), // first deposit at block 3
+      "last-vault-block": Cl.uint(0)
+    }));
   });
 });
