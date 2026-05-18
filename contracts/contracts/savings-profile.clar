@@ -65,8 +65,11 @@
   (map-get? profiles owner)
 )
 
-(define-read-only (get-total-saved (user principal))
-  (ok u0)
+(define-read-only (get-total-saved (owner principal))
+  (match (map-get? profiles owner)
+    profile (ok (get total-saved profile))
+    (ok u0)
+  )
 )
 
 (define-read-only (is-member (owner principal))
