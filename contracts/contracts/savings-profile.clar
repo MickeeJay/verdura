@@ -45,7 +45,19 @@
 (define-public (record-withdrawal (owner principal) (vault-id uint) (amount uint) (yield-earned uint))
   (begin
     (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
-    (ok true)
+    (let
+      (
+        (profile (unwrap! (map-get? profiles owner) err-profile-not-found))
+      )
+      (map-set profiles owner
+        (merge profile {
+          total-vaults-completed: (+ (get total-vaults-completed profile) u1),
+          total-yield-earned: (+ (get total-yield-earned profile) yield-earned),
+          last-vault-block: block-height
+        })
+      )
+      (ok true)
+    )
   )
 )
 
