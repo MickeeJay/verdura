@@ -26,8 +26,13 @@
 (define-data-var contract-owner principal tx-sender)
 
 ;; Public Functions
-(define-public (route-to-yield (token principal) (amount uint))
-  (ok true)
+(define-public (route-to-yield (vault-id uint) (amount uint) (owner principal))
+  (begin
+    (asserts! (not (var-get router-paused)) err-router-paused)
+    (asserts! (> amount u0) err-zero-amount)
+    (asserts! (default-to false (map-get? supported-tokens contract-caller)) err-unsupported-token)
+    (ok u0)
+  )
 )
 
 (define-public (withdraw-from-yield (token principal) (amount uint))
