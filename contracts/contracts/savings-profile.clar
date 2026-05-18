@@ -46,3 +46,22 @@
   )
 )
 
+(define-read-only (get-savings-streak (owner principal))
+  (match (map-get? profiles owner)
+    profile
+    (let
+      (
+        (last-block (get last-vault-block profile))
+      )
+      (if (is-eq last-block u0)
+        u0
+        (if (<= (- block-height last-block) u4320)
+          (get total-vaults-completed profile)
+          u0
+        )
+      )
+    )
+    u0
+  )
+)
+
