@@ -99,14 +99,25 @@ describe("savings-profile", () => {
   });
 
   it("should increment total-saved upon subsequent deposits", () => {
-    // 1. Create another vault (vault-id 2)
+    // 1. Create vault 1 and deposit 1000
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault 1"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+
+    // 2. Create vault 2 and deposit 500
     simnet.callPublicFn("savings-vault", "create-vault", [
       Cl.stringAscii("Vault 2"),
       Cl.uint(144),
       Cl.bool(false)
     ], wallet_1);
 
-    // 2. Deposit to the new vault (vault-id 2)
     simnet.callPublicFn("savings-vault", "deposit", [
       Cl.uint(2),
       Cl.uint(500)
@@ -114,12 +125,12 @@ describe("savings-profile", () => {
 
     // 3. Verify total-saved is now 1500
     const profile = simnet.callReadOnlyFn("savings-profile", "get-profile", [Cl.principal(wallet_1)], wallet_1);
-    expect(profile.result).toBeSome(Cl.tuple({
-      "total-vaults-completed": Cl.uint(0),
-      "total-saved": Cl.uint(1500),
-      "total-yield-earned": Cl.uint(0),
-      "member-since": Cl.uint(2),
-      "last-vault-block": Cl.uint(0)
-    }));
+    expect(profile.result).toBeSome();
+    const data: any = (profile.result as any).value.data;
+    expect(data["total-vaults-completed"]).toBeUint(0);
+    expect(data["total-saved"]).toBeUint(1500);
+    expect(data["total-yield-earned"]).toBeUint(0);
+    expect(data["last-vault-block"]).toBeUint(0);
+    expect(data["member-since"]).toBeUint(3); // first deposit at block 3
   });
 });
