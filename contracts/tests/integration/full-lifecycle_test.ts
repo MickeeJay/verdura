@@ -27,5 +27,20 @@ describe("verdura-integration-tests", () => {
     ], wallet_1);
     expect(createResult.result).toBeOk(Cl.uint(1));
     const vaultId = 1;
+
+    // 2. Deposit 10000 uSTX
+    const depositResult = simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(vaultId),
+      Cl.uint(amount)
+    ], wallet_1);
+    expect(depositResult.result).toBeOk(Cl.bool(true));
+
+    // Verify router stats
+    const statsBefore = simnet.callReadOnlyFn("yield-router", "get-router-stats", [], wallet_1);
+    expect(statsBefore.result).toBeTuple({
+      "total-shares": Cl.uint(amount),
+      "total-assets": Cl.uint(amount),
+      "is-paused": Cl.bool(false)
+    });
   });
 });
