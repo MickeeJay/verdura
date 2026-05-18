@@ -19,7 +19,10 @@
 
 ;; Public Functions
 (define-public (record-deposit (owner principal) (vault-id uint) (amount uint))
-  (ok true)
+  (begin
+    (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
+    (ok true)
+  )
 )
 
 (define-public (record-withdrawal (user principal) (amount uint))
