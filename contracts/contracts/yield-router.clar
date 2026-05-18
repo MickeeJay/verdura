@@ -80,3 +80,32 @@
   (ok true)
 )
 
+(define-read-only (get-router-stats)
+  (let
+    (
+      (last-block (var-get last-yield-block))
+      (current-assets (var-get total-assets-managed))
+      (accrued-assets
+        (if (is-eq last-block u0)
+          current-assets
+          (if (and (> block-height last-block) (> current-assets u0))
+            (let
+              (
+                (elapsed-blocks (- block-height last-block))
+                (yield-amount (simulate-yield current-assets elapsed-blocks))
+              )
+              (+ current-assets yield-amount)
+            )
+            current-assets
+          )
+        )
+      )
+    )
+    {
+      total-shares: (var-get total-shares-issued),
+      total-assets: accrued-assets,
+      is-paused: (var-get router-paused)
+    }
+  )
+)
+
