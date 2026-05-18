@@ -22,6 +22,8 @@
 (define-data-var router-paused bool false)
 (define-data-var total-shares-issued uint u0)
 (define-data-var total-assets-managed uint u0)
+(define-data-var last-yield-block uint u0)
+(define-data-var contract-owner principal tx-sender)
 
 ;; Public Functions
 (define-public (route-to-yield (token principal) (amount uint))
