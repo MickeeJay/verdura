@@ -68,13 +68,20 @@
   (begin
     (asserts! (not (var-get router-paused)) err-router-paused)
     (asserts! (default-to false (map-get? supported-tokens contract-caller)) err-unsupported-token)
+    ;; First accrue yield globally
+    (accrue-yield)
+    
     (let
       (
         (position (unwrap! (map-get? yield-positions { vault-id: vault-id, owner: owner }) err-zero-amount))
         (shares (get shares position))
+        (total-shares (var-get total-shares-issued))
+        (total-assets (var-get total-assets-managed))
+        (redemption-amount (/ (* shares total-assets) total-shares))
       )
       (asserts! (> shares u0) err-zero-amount)
-      (ok u0)
+      
+      (ok redemption-amount)
     )
   )
 )
