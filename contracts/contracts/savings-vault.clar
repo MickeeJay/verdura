@@ -72,23 +72,37 @@
     (
       (vault (unwrap! (map-get? vaults { owner: tx-sender, vault-id: vault-id }) err-not-found))
     )
-    (asserts! (is-eq tx-sender tx-sender) err-unauthorized) ;; implicit by map-get? owner check, but we can leave it or remove it
+    (asserts! (is-eq tx-sender tx-sender) err-unauthorized)
     (asserts! (get is-active vault) err-vault-locked)
     (asserts! (> amount u0) err-invalid-amount)
 
     (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
 
-    (map-set vaults
-      { owner: tx-sender, vault-id: vault-id }
-      (merge vault { principal-amount: (+ (get principal-amount vault) amount) })
-    )
-
     (if (get yield-enabled vault)
-      (unwrap! (contract-call? .yield-router route-to-yield (as-contract tx-sender) amount) err-unauthorized)
-      true
+      (begin
+        (try! (as-contract (stx-transfer? amount tx-sender .yield-router)))
+        (let
+          (
+            (shares (unwrap! (contract-call? .yield-router route-to-yield vault-id amount tx-sender) err-unauthorized))
+          )
+          (map-set vaults
+            { owner: tx-sender, vault-id: vault-id }
+            (merge vault { 
+              principal-amount: (+ (get principal-amount vault) amount),
+              yield-shares: (+ (get yield-shares vault) shares)
+            })
+          )
+          (ok true)
+        )
+      )
+      (begin
+        (map-set vaults
+          { owner: tx-sender, vault-id: vault-id }
+          (merge vault { principal-amount: (+ (get principal-amount vault) amount) })
+        )
+        (ok true)
+      )
     )
-
-    (ok true)
   )
 )
 
@@ -105,21 +119,29 @@
     (asserts! (get is-active vault) err-vault-matured)
     (asserts! (>= block-height (get end-block vault)) err-vault-locked)
 
-    (try! (as-contract (stx-transfer? amount tx-sender caller)))
-
-    (map-set vaults
-      { owner: caller, vault-id: vault-id }
-      (merge vault { is-active: false })
-    )
-
     (if (get yield-enabled vault)
-      (unwrap! (contract-call? .yield-router withdraw-from-yield (as-contract tx-sender) amount) err-unauthorized)
-      true
+      (let
+        (
+          (amount-redeemed (unwrap! (contract-call? .yield-router withdraw-from-yield vault-id caller) err-unauthorized))
+        )
+        (try! (as-contract (stx-transfer? amount-redeemed tx-sender caller)))
+        (map-set vaults
+          { owner: caller, vault-id: vault-id }
+          (merge vault { is-active: false, yield-shares: u0 })
+        )
+        (unwrap! (contract-call? .savings-profile record-withdrawal caller amount-redeemed) err-unauthorized)
+        (ok amount-redeemed)
+      )
+      (begin
+        (try! (as-contract (stx-transfer? amount tx-sender caller)))
+        (map-set vaults
+          { owner: caller, vault-id: vault-id }
+          (merge vault { is-active: false })
+        )
+        (unwrap! (contract-call? .savings-profile record-withdrawal caller amount) err-unauthorized)
+        (ok amount)
+      )
     )
-
-    (unwrap! (contract-call? .savings-profile record-withdrawal caller amount) err-unauthorized)
-
-    (ok amount)
   )
 )
 
