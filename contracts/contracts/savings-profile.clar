@@ -26,8 +26,8 @@
   (ok true)
 )
 
-(define-public (get-profile (user principal))
-  (ok true)
+(define-read-only (get-profile (owner principal))
+  (map-get? profiles owner)
 )
 
 (define-read-only (get-total-saved (user principal))
