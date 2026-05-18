@@ -81,11 +81,12 @@
         (total-shares (var-get total-shares-issued))
         (total-assets (var-get total-assets-managed))
         (redemption-amount (/ (* shares total-assets) total-shares))
+        (recipient contract-caller)
       )
       (asserts! (> shares u0) err-zero-amount)
       
-      ;; Transfer STX from yield-router to savings-vault (contract-caller)
-      (try! (as-contract (stx-transfer? redemption-amount tx-sender contract-caller)))
+      ;; Transfer STX from yield-router to savings-vault (recipient)
+      (try! (as-contract (stx-transfer? redemption-amount tx-sender recipient)))
       
       ;; Delete position
       (map-delete yield-positions { vault-id: vault-id, owner: owner })
