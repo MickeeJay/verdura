@@ -173,6 +173,16 @@ describe("verdura-integration-tests", () => {
   });
 
   it("yield-router-paused-blocks-deposit", () => {
-    expect(true).toBe(true);
+    // 1. Create a yield-enabled vault
+    const createResult = simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Paused Yield Vault"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+    expect(createResult.result).toBeOk(Cl.uint(1));
+
+    // 2. Pause the yield router from the deployer (contract owner)
+    const pauseResult = simnet.callPublicFn("yield-router", "pause-router", [], deployer);
+    expect(pauseResult.result).toBeOk(Cl.bool(true));
   });
 });
