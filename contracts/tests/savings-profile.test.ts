@@ -59,4 +59,14 @@ describe("savings-profile", () => {
     );
     expect(result.result).toBeUint(0);
   });
+
+  it("should return zero for get-savings-streak on a non-existent profile", () => {
+    const result = simnet.callReadOnlyFn(
+      "savings-profile",
+      "get-savings-streak",
+      [Cl.principal(wallet_1)],
+      wallet_1
+    );
+    expect(result.result).toBeUint(0);
+  });
 });
