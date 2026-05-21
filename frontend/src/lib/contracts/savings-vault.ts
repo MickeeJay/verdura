@@ -1,3 +1,7 @@
+import { ContractCallOptions, makeContractCall, stringAsciiCV, uintCV, boolCV } from "@stacks/transactions";
+import { StacksNetwork } from "@stacks/network";
+import { getContractAddresses } from "../constants";
+
 export interface VaultData {
   id: number;
   owner: string;
@@ -28,3 +32,21 @@ export interface WithdrawParams {
 export interface VaultQueryResult {
   vault: VaultData | null;
 }
+
+export function buildCreateVaultTx(params: CreateVaultParams, network: StacksNetwork): ContractCallOptions {
+  const { savingsVault } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsVault.split(".");
+
+  return {
+    contractAddress,
+    contractName,
+    functionName: "create-vault",
+    functionArgs: [
+      stringAsciiCV(params.name),
+      uintCV(params.durationBlocks),
+      boolCV(params.yieldEnabled),
+    ],
+    network,
+  };
+}
+
