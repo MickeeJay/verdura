@@ -8,6 +8,8 @@ import {
 } from "@stacks/transactions";
 import { parseVault } from "../lib/contracts/savings-vault";
 import { parseProfile } from "../lib/contracts/savings-profile";
+import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
+import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
 
 describe("VaultData Parsing", () => {
   it("correctly parses a valid some tuple to VaultData", () => {
@@ -68,4 +70,22 @@ describe("ProfileData Parsing", () => {
     expect(result).toBeNull();
   });
 });
+
+describe("getContractAddresses", () => {
+  it("resolves mainnet contract addresses correctly", () => {
+    const result = getContractAddresses(STACKS_MAINNET);
+    expect(result).toEqual(CONTRACT_ADDRESSES.mainnet);
+  });
+
+  it("resolves testnet contract addresses correctly", () => {
+    const result = getContractAddresses(STACKS_TESTNET);
+    expect(result).toEqual(CONTRACT_ADDRESSES.testnet);
+  });
+
+  it("resolves devnet contract addresses correctly", () => {
+    const result = getContractAddresses(STACKS_DEVNET);
+    expect(result).toEqual(CONTRACT_ADDRESSES.devnet);
+  });
+});
+
 
