@@ -50,3 +50,20 @@ export function buildCreateVaultTx(params: CreateVaultParams, network: StacksNet
   };
 }
 
+export function buildDepositTx(params: DepositParams, network: StacksNetwork): ContractCallOptions {
+  const { savingsVault } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsVault.split(".");
+
+  return {
+    contractAddress,
+    contractName,
+    functionName: "deposit",
+    functionArgs: [
+      uintCV(params.vaultId),
+      uintCV(params.amount),
+    ],
+    network,
+  };
+}
+
+
