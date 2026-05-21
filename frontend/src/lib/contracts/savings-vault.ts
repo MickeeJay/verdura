@@ -1,4 +1,15 @@
-import { ContractCallOptions, makeContractCall, stringAsciiCV, uintCV, boolCV } from "@stacks/transactions";
+import {
+  ContractCallOptions,
+  makeContractCall,
+  stringAsciiCV,
+  uintCV,
+  boolCV,
+  fetchCallReadOnlyFunction as callReadOnlyFunction,
+  standardPrincipalCV,
+  cvToValue,
+  ClarityType,
+  ClarityValue
+} from "@stacks/transactions";
 import { StacksNetwork } from "@stacks/network";
 import { getContractAddresses } from "../constants";
 
@@ -80,6 +91,61 @@ export function buildWithdrawTx(params: WithdrawParams, network: StacksNetwork):
     network,
   };
 }
+
+export function parseVault(val: ClarityValue, id: number, ownerAddress: string): VaultData | null {
+  if (val.type === ClarityType.OptionalNone) {
+    return null;
+  }
+
+  if (val.type === ClarityType.OptionalSome) {
+    const tuple = val.value;
+    if (tuple.type === ClarityType.Tuple) {
+      const data = tuple.value;
+      return {
+        id,
+        owner: ownerAddress,
+        name: cvToValue(data["name"]) as string,
+        principalAmount: cvToValue(data["principal-amount"]) as bigint,
+        startBlock: cvToValue(data["start-block"]) as bigint,
+        endBlock: cvToValue(data["end-block"]) as bigint,
+        isActive: cvToValue(data["is-active"]) as boolean,
+        yieldEnabled: cvToValue(data["yield-enabled"]) as boolean,
+        yieldShares: cvToValue(data["yield-shares"]) as bigint,
+      };
+    }
+  }
+
+  return null;
+}
+
+export async function fetchVault(
+  ownerAddress: string,
+  vaultId: number,
+  network: StacksNetwork
+): Promise<VaultData | null> {
+  const { savingsVault } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsVault.split(".");
+
+  try {
+    const result = await callReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: "get-vault",
+      functionArgs: [
+        standardPrincipalCV(ownerAddress),
+        uintCV(vaultId),
+      ],
+      senderAddress: ownerAddress,
+      network,
+    });
+
+    return parseVault(result, vaultId, ownerAddress);
+  } catch (error) {
+    console.error(`Error fetching vault ${vaultId}:`, error);
+    return null;
+  }
+}
+
 
 
 
