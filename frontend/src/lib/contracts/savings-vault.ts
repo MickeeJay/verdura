@@ -146,6 +146,21 @@ export async function fetchVault(
   }
 }
 
+export async function fetchAllVaultsForOwner(
+  ownerAddress: string,
+  network: StacksNetwork
+): Promise<VaultData[]> {
+  const vaults: VaultData[] = [];
+  for (let id = 1; id <= 50; id++) {
+    const vault = await fetchVault(ownerAddress, id, network);
+    if (vault) {
+      vaults.push(vault);
+    }
+  }
+  return vaults;
+}
+
+
 
 
 
