@@ -160,6 +160,38 @@ export async function fetchAllVaultsForOwner(
   return vaults;
 }
 
+export async function fetchIsVaultMature(
+  ownerAddress: string,
+  vaultId: number,
+  network: StacksNetwork
+): Promise<boolean> {
+  const { savingsVault } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsVault.split(".");
+
+  try {
+    const result = await callReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: "is-vault-mature",
+      functionArgs: [
+        standardPrincipalCV(ownerAddress),
+        uintCV(vaultId),
+      ],
+      senderAddress: ownerAddress,
+      network,
+    });
+
+    if (result.type === ClarityType.ResponseOk) {
+      return cvToValue(result.value) as boolean;
+    }
+    return false;
+  } catch (error) {
+    console.error(`Error fetching maturity for vault ${vaultId}:`, error);
+    return false;
+  }
+}
+
+
 
 
 
