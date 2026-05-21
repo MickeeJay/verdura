@@ -39,3 +39,33 @@ export async function fetchYieldBalance(
     return 0;
   }
 }
+
+export async function fetchSimulatedYield(
+  amount: number,
+  blocks: number,
+  network: StacksNetwork
+): Promise<number> {
+  const { yieldRouter } = getContractAddresses(network);
+  const [contractAddress, contractName] = yieldRouter.split(".");
+
+  try {
+    const result = await callReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: "simulate-yield",
+      functionArgs: [
+        uintCV(amount),
+        uintCV(blocks),
+      ],
+      senderAddress: contractAddress,
+      network,
+    });
+
+    const val = cvToValue(result);
+    return Number(val);
+  } catch (error) {
+    console.error(`Error simulating yield for amount ${amount} over ${blocks} blocks:`, error);
+    return 0;
+  }
+}
+
