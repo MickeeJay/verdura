@@ -43,4 +43,23 @@ describe("WalletConnectButton Component", () => {
 
     expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
   });
+
+  it("renders truncated address when connected", () => {
+    const mockContextValue = {
+      address: "ST3924151251261313626246",
+      isConnected: true,
+      network: "testnet" as const,
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+      stacksNetwork: {} as unknown as StacksNetwork,
+    };
+
+    render(
+      <WalletContext.Provider value={mockContextValue}>
+        <WalletConnectButton />
+      </WalletContext.Provider>
+    );
+
+    expect(screen.getByText("ST3924...6246")).toBeInTheDocument();
+  });
 });
