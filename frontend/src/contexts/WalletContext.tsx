@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, ReactNode } from "react";
+import React, { createContext, useState, useEffect, useCallback, ReactNode } from "react";
 import {
+  showConnect,
   AppConfig,
   UserSession,
 } from "@stacks/connect";
@@ -44,3 +45,63 @@ function extractAddress(session: UserSession): string | null {
     return null;
   }
 }
+
+export const WalletProvider = ({ children }: { children: ReactNode }) => {
+  const [address, setAddress] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    if (userSession.isUserSignedIn()) {
+      const addr = extractAddress(userSession);
+      if (addr) {
+        setAddress(addr);
+        setIsConnected(true);
+      }
+    }
+  }, []);
+
+  const connect = useCallback(() => {
+    showConnect({
+      appDetails: {
+        name: "Verdura",
+        icon: "https://raw.githubusercontent.com/MickeeJay/verdura/main/docs/logo.png",
+      },
+      userSession,
+      onFinish: () => {
+        const addr = extractAddress(userSession);
+        if (addr) {
+          setAddress(addr);
+          setIsConnected(true);
+        }
+      },
+      onCancel: () => {
+        console.log("Wallet connection cancelled");
+      },
+    });
+  }, []);
+
+  const disconnect = useCallback(() => {
+    if (userSession.isUserSignedIn()) {
+      userSession.signUserOut();
+    }
+    setAddress(null);
+    setIsConnected(false);
+  }, []);
+
+  const contextValue: WalletContextType = {
+    address: isMounted ? address : null,
+    isConnected: isMounted ? isConnected : false,
+    network: networkType,
+    connect,
+    disconnect,
+    stacksNetwork,
+  };
+
+  return (
+    <WalletContext.Provider value={contextValue}>
+      {children}
+    </WalletContext.Provider>
+  );
+};
