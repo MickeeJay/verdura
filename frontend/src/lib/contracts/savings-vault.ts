@@ -66,4 +66,20 @@ export function buildDepositTx(params: DepositParams, network: StacksNetwork): C
   };
 }
 
+export function buildWithdrawTx(params: WithdrawParams, network: StacksNetwork): ContractCallOptions {
+  const { savingsVault } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsVault.split(".");
+
+  return {
+    contractAddress,
+    contractName,
+    functionName: "withdraw",
+    functionArgs: [
+      uintCV(params.vaultId),
+    ],
+    network,
+  };
+}
+
+
 
