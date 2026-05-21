@@ -29,17 +29,18 @@ export const CONTRACT_ADDRESSES: Record<"devnet" | "testnet" | "mainnet", Contra
 /**
  * Helper to resolve the correct contract addresses based on a StacksNetwork instance.
  */
-import { StacksNetwork } from "@stacks/network";
+import { StacksNetwork, ChainId } from "@stacks/network";
 
 export function getContractAddresses(network: StacksNetwork): ContractAddresses {
-  if (network.isMainnet()) {
+  if (network.chainId === ChainId.Mainnet) {
     return CONTRACT_ADDRESSES.mainnet;
   }
   // Check if it's local/devnet or testnet.
   // Hiro's StacksNetwork doesn't explicitly expose devnet, but we can check the RPC URL or assume testnet as fallback.
-  const url = network.getCoreApiUrl();
+  const url = network.client.baseUrl;
   if (url.includes("localhost") || url.includes("127.0.0.1") || url.includes("devnet")) {
     return CONTRACT_ADDRESSES.devnet;
   }
   return CONTRACT_ADDRESSES.testnet;
 }
+
