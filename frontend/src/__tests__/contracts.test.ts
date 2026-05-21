@@ -7,6 +7,7 @@ import {
   noneCV
 } from "@stacks/transactions";
 import { parseVault } from "../lib/contracts/savings-vault";
+import { parseProfile } from "../lib/contracts/savings-profile";
 
 describe("VaultData Parsing", () => {
   it("correctly parses a valid some tuple to VaultData", () => {
@@ -40,3 +41,31 @@ describe("VaultData Parsing", () => {
     expect(result).toBeNull();
   });
 });
+
+describe("ProfileData Parsing", () => {
+  it("correctly parses a valid some tuple to ProfileData", () => {
+    const mockTuple = tupleCV({
+      "total-vaults-completed": uintCV(5),
+      "total-saved": uintCV(25000),
+      "total-yield-earned": uintCV(450),
+      "member-since": uintCV(100),
+      "last-vault-block": uintCV(500),
+    });
+    const mockSome = someCV(mockTuple);
+
+    const result = parseProfile(mockSome);
+    expect(result).toEqual({
+      totalVaultsCompleted: 5n,
+      totalSaved: 25000n,
+      totalYieldEarned: 450n,
+      memberSince: 100n,
+      lastVaultBlock: 500n,
+    });
+  });
+
+  it("returns null for none response", () => {
+    const result = parseProfile(noneCV());
+    expect(result).toBeNull();
+  });
+});
+
