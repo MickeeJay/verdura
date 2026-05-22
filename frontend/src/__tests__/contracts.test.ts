@@ -11,7 +11,7 @@ import {
   falseCV
 } from "@stacks/transactions";
 import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData } from "../lib/contracts/savings-vault";
-import { parseProfile } from "../lib/contracts/savings-profile";
+import { parseProfile, fetchProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
 
@@ -194,5 +194,46 @@ describe("fetchIsVaultMature", () => {
     );
 
     expect(result).toBe(false);
+  });
+});
+
+describe("fetchProfile", () => {
+  beforeEach(() => {
+    mockFetchReadOnly.mockReset();
+  });
+
+  it("returns ProfileData when profile exists", async () => {
+    const profileTuple = tupleCV({
+      "total-vaults-completed": uintCV(3),
+      "total-saved": uintCV(15000),
+      "total-yield-earned": uintCV(200),
+      "member-since": uintCV(50),
+      "last-vault-block": uintCV(400),
+    });
+    mockFetchReadOnly.mockResolvedValue(someCV(profileTuple));
+
+    const result = await fetchProfile(
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      STACKS_TESTNET
+    );
+
+    expect(result).toEqual({
+      totalVaultsCompleted: 3n,
+      totalSaved: 15000n,
+      totalYieldEarned: 200n,
+      memberSince: 50n,
+      lastVaultBlock: 400n,
+    });
+  });
+
+  it("returns null when profile does not exist", async () => {
+    mockFetchReadOnly.mockResolvedValue(noneCV());
+
+    const result = await fetchProfile(
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      STACKS_TESTNET
+    );
+
+    expect(result).toBeNull();
   });
 });
