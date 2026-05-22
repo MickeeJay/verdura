@@ -89,7 +89,7 @@ export function CreateVaultForm() {
           name: "Verdura",
           icon: "https://raw.githubusercontent.com/MickeeJay/verdura/main/docs/logo.png",
         },
-        onFinish: (result) => {
+        onFinish: (result: { txId: string }) => {
           setTxState({ status: "success", txId: result.txId });
         },
         onCancel: () => {
