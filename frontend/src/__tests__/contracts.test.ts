@@ -8,9 +8,10 @@ import {
   responseOkCV,
   responseErrorCV,
   trueCV,
-  falseCV
+  falseCV,
+  cvToValue
 } from "@stacks/transactions";
-import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData } from "../lib/contracts/savings-vault";
+import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData, buildCreateVaultTx } from "../lib/contracts/savings-vault";
 import { parseProfile, fetchProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
@@ -310,4 +311,26 @@ describe("fetchSimulatedYield", () => {
     expect(result).toBe(0);
   });
 });
+
+describe("buildCreateVaultTx", () => {
+  it("correctly constructs ContractCallOptions with the correct network and args", () => {
+    const params = {
+      name: "Test Vault",
+      durationBlocks: 1440,
+      yieldEnabled: true,
+    };
+
+    const options = buildCreateVaultTx(params, STACKS_TESTNET);
+
+    expect(options.contractAddress).toBe(CONTRACT_ADDRESSES.testnet.savingsVault.split(".")[0]);
+    expect(options.contractName).toBe(CONTRACT_ADDRESSES.testnet.savingsVault.split(".")[1]);
+    expect(options.functionName).toBe("create-vault");
+    expect(options.network).toBe(STACKS_TESTNET);
+    expect(options.functionArgs).toHaveLength(3);
+    expect(cvToValue(options.functionArgs[0])).toBe("Test Vault");
+    expect(cvToValue(options.functionArgs[1])).toBe(1440n);
+    expect(cvToValue(options.functionArgs[2])).toBe(true);
+  });
+});
+
 
