@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CreateVaultForm } from "../components/vaults/CreateVaultForm";
 import { WalletContext } from "../contexts/WalletContext";
-import { StacksNetwork, STACKS_TESTNET } from "@stacks/network";
+import { STACKS_TESTNET } from "@stacks/network";
 import { openContractCall } from "@stacks/connect";
 import { fetchSimulatedYield } from "../lib/contracts/yield-router";
 
