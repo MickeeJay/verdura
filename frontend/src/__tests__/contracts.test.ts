@@ -11,7 +11,7 @@ import {
   falseCV,
   cvToValue
 } from "@stacks/transactions";
-import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData, buildCreateVaultTx } from "../lib/contracts/savings-vault";
+import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData, buildCreateVaultTx, buildDepositTx, buildWithdrawTx } from "../lib/contracts/savings-vault";
 import { parseProfile, fetchProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
@@ -332,5 +332,42 @@ describe("buildCreateVaultTx", () => {
     expect(cvToValue(options.functionArgs[2])).toBe(true);
   });
 });
+
+describe("buildDepositTx", () => {
+  it("correctly constructs ContractCallOptions with the correct network and args for deposit", () => {
+    const params = {
+      vaultId: 3,
+      amount: 50000n,
+    };
+
+    const options = buildDepositTx(params, STACKS_TESTNET);
+
+    expect(options.contractAddress).toBe(CONTRACT_ADDRESSES.testnet.savingsVault.split(".")[0]);
+    expect(options.contractName).toBe(CONTRACT_ADDRESSES.testnet.savingsVault.split(".")[1]);
+    expect(options.functionName).toBe("deposit");
+    expect(options.network).toBe(STACKS_TESTNET);
+    expect(options.functionArgs).toHaveLength(2);
+    expect(cvToValue(options.functionArgs[0])).toBe(3n);
+    expect(cvToValue(options.functionArgs[1])).toBe(50000n);
+  });
+});
+
+describe("buildWithdrawTx", () => {
+  it("correctly constructs ContractCallOptions with the correct network and args for withdraw", () => {
+    const params = {
+      vaultId: 5,
+    };
+
+    const options = buildWithdrawTx(params, STACKS_TESTNET);
+
+    expect(options.contractAddress).toBe(CONTRACT_ADDRESSES.testnet.savingsVault.split(".")[0]);
+    expect(options.contractName).toBe(CONTRACT_ADDRESSES.testnet.savingsVault.split(".")[1]);
+    expect(options.functionName).toBe("withdraw");
+    expect(options.network).toBe(STACKS_TESTNET);
+    expect(options.functionArgs).toHaveLength(1);
+    expect(cvToValue(options.functionArgs[0])).toBe(5n);
+  });
+});
+
 
 
