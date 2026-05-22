@@ -95,7 +95,7 @@ export function CreateVaultForm() {
         onCancel: () => {
           setTxState({ status: "idle" });
         },
-      });
+      } as any);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Transaction failed";
       setTxState({ status: "error", message });
