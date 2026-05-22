@@ -6,10 +6,22 @@ import {
   boolCV,
   noneCV
 } from "@stacks/transactions";
-import { parseVault } from "../lib/contracts/savings-vault";
+import { parseVault, fetchAllVaultsForOwner, VaultData } from "../lib/contracts/savings-vault";
 import { parseProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
+
+// Mock the fetchCallReadOnlyFunction from @stacks/transactions to prevent actual network calls
+jest.mock("@stacks/transactions", () => {
+  const actual = jest.requireActual("@stacks/transactions");
+  return {
+    ...actual,
+    fetchCallReadOnlyFunction: jest.fn(),
+  };
+});
+
+import { fetchCallReadOnlyFunction } from "@stacks/transactions";
+const mockFetchReadOnly = fetchCallReadOnlyFunction as jest.MockedFunction<typeof fetchCallReadOnlyFunction>;
 
 describe("VaultData Parsing", () => {
   it("correctly parses a valid some tuple to VaultData", () => {
@@ -85,6 +97,57 @@ describe("getContractAddresses", () => {
   it("resolves devnet contract addresses correctly", () => {
     const result = getContractAddresses(STACKS_DEVNET);
     expect(result).toEqual(CONTRACT_ADDRESSES.devnet);
+  });
+});
+
+describe("fetchAllVaultsForOwner", () => {
+  beforeEach(() => {
+    mockFetchReadOnly.mockReset();
+  });
+
+  it("filters out null results and returns only valid vaults", async () => {
+    const validVaultTuple = tupleCV({
+      name: stringAsciiCV("Vault A"),
+      "principal-amount": uintCV(1000),
+      "start-block": uintCV(10),
+      "end-block": uintCV(500),
+      "is-active": boolCV(true),
+      "yield-enabled": boolCV(false),
+      "yield-shares": uintCV(0),
+    });
+
+    // Return a valid vault for IDs 1 and 3, none for all others
+    mockFetchReadOnly.mockImplementation(async (opts) => {
+      const args = (opts as { functionArgs: { value: bigint }[] }).functionArgs;
+      const vaultIdArg = args[1];
+      const id = Number(vaultIdArg.value);
+      if (id === 1 || id === 3) {
+        return someCV(validVaultTuple);
+      }
+      return noneCV();
+    });
+
+    const result = await fetchAllVaultsForOwner(
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      STACKS_TESTNET
+    );
+
+    expect(result).toHaveLength(2);
+    expect(result[0].id).toBe(1);
+    expect(result[0].name).toBe("Vault A");
+    expect(result[1].id).toBe(3);
+  });
+
+  it("returns empty array when no vaults exist", async () => {
+    mockFetchReadOnly.mockResolvedValue(noneCV());
+
+    const result = await fetchAllVaultsForOwner(
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      STACKS_TESTNET
+    );
+
+    expect(result).toEqual([]);
+    expect(mockFetchReadOnly).toHaveBeenCalledTimes(50);
   });
 });
 
