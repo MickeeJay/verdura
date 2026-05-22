@@ -11,7 +11,7 @@ export const createVaultSchema = z.object({
     .int({ message: "Duration must be a whole number of days" })
     .min(1, { message: "Duration must be at least 1 day" })
     .max(365, { message: "Duration cannot exceed 365 days" }),
-  yieldEnabled: z.boolean().default(false),
+  yieldEnabled: z.boolean(),
 });
 
 export type CreateVaultInput = z.infer<typeof createVaultSchema>;
