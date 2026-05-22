@@ -4,9 +4,13 @@ import {
   stringAsciiCV,
   uintCV,
   boolCV,
-  noneCV
+  noneCV,
+  responseOkCV,
+  responseErrorCV,
+  trueCV,
+  falseCV
 } from "@stacks/transactions";
-import { parseVault, fetchAllVaultsForOwner, VaultData } from "../lib/contracts/savings-vault";
+import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData } from "../lib/contracts/savings-vault";
 import { parseProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
@@ -151,4 +155,44 @@ describe("fetchAllVaultsForOwner", () => {
   });
 });
 
+describe("fetchIsVaultMature", () => {
+  beforeEach(() => {
+    mockFetchReadOnly.mockReset();
+  });
 
+  it("returns true when contract responds with (ok true)", async () => {
+    mockFetchReadOnly.mockResolvedValue(responseOkCV(trueCV()));
+
+    const result = await fetchIsVaultMature(
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      1,
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(true);
+  });
+
+  it("returns false when contract responds with (ok false)", async () => {
+    mockFetchReadOnly.mockResolvedValue(responseOkCV(falseCV()));
+
+    const result = await fetchIsVaultMature(
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      1,
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(false);
+  });
+
+  it("returns false when contract responds with an error", async () => {
+    mockFetchReadOnly.mockResolvedValue(responseErrorCV(uintCV(102)));
+
+    const result = await fetchIsVaultMature(
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      99,
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(false);
+  });
+});
