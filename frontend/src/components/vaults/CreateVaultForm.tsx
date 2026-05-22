@@ -1,17 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createVaultSchema, type CreateVaultInput } from "@/lib/validation/vault";
+import { durationDaysToBlocks } from "@/lib/utils/blocks";
+import { fetchSimulatedYield } from "@/lib/contracts/yield-router";
+import { useWallet } from "@/hooks/useWallet";
 import { DurationSlider } from "./DurationSlider";
 import { YieldToggle } from "./YieldToggle";
 
 export function CreateVaultForm() {
+  const { stacksNetwork } = useWallet();
   const {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<CreateVaultInput>({
     resolver: zodResolver(createVaultSchema),
@@ -21,6 +26,39 @@ export function CreateVaultForm() {
       yieldEnabled: false,
     },
   });
+
+  const watchedDuration = watch("durationDays");
+  const watchedYield = watch("yieldEnabled");
+
+  const [simulatedAmount, setSimulatedAmount] = useState(100_000_000);
+  const [estimatedYield, setEstimatedYield] = useState<number | null>(null);
+  const [yieldLoading, setYieldLoading] = useState(false);
+
+  const updateYieldPreview = useCallback(async () => {
+    if (!watchedYield) {
+      setEstimatedYield(null);
+      return;
+    }
+    const blocks = durationDaysToBlocks(watchedDuration);
+    if (blocks <= 0 || simulatedAmount <= 0) {
+      setEstimatedYield(null);
+      return;
+    }
+    setYieldLoading(true);
+    try {
+      const result = await fetchSimulatedYield(simulatedAmount, blocks, stacksNetwork);
+      setEstimatedYield(result);
+    } catch {
+      setEstimatedYield(null);
+    } finally {
+      setYieldLoading(false);
+    }
+  }, [watchedDuration, watchedYield, simulatedAmount, stacksNetwork]);
+
+  useEffect(() => {
+    const timeout = setTimeout(updateYieldPreview, 300);
+    return () => clearTimeout(timeout);
+  }, [updateYieldPreview]);
 
   const onSubmit = (data: CreateVaultInput) => {
     console.log("Form submitted:", data);
@@ -106,6 +144,37 @@ export function CreateVaultForm() {
           />
         )}
       />
+
+      {/* Yield Preview */}
+      {watchedYield && (
+        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-3">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="simulated-amount" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Simulated Deposit (µSTX)
+            </label>
+            <input
+              type="number"
+              id="simulated-amount"
+              min={1}
+              value={simulatedAmount}
+              onChange={(e) => setSimulatedAmount(Number(e.target.value) || 0)}
+              className="flex h-9 w-full rounded-lg border border-input bg-background px-3 py-1.5 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+            />
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Estimated yield</span>
+            <span className="font-mono font-semibold text-emerald-500" data-testid="yield-preview">
+              {yieldLoading ? (
+                <span className="animate-pulse">Calculating…</span>
+              ) : estimatedYield !== null ? (
+                `~${estimatedYield.toLocaleString()} µSTX`
+              ) : (
+                "—"
+              )}
+            </span>
+          </div>
+        </div>
+      )}
 
       <button
         type="submit"
