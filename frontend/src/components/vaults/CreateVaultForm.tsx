@@ -83,6 +83,7 @@ export function CreateVaultForm() {
         stacksNetwork
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await openContractCall({
         ...txOptions,
         appDetails: {
