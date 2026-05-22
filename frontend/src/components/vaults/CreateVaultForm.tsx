@@ -41,6 +41,17 @@ export function CreateVaultForm() {
         </p>
       </div>
 
+      {/* Accessible error summary */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {Object.keys(errors).length > 0 && (
+          <span>
+            Form has {Object.keys(errors).length} error{Object.keys(errors).length > 1 ? "s" : ""}.
+            {errors.name && ` Vault name: ${errors.name.message}.`}
+            {errors.durationDays && ` Duration: ${errors.durationDays.message}.`}
+          </span>
+        )}
+      </div>
+
       {/* Vault Name Field */}
       <div className="flex flex-col gap-2">
         <label htmlFor="vault-name" className="text-sm font-semibold text-foreground">
@@ -49,6 +60,7 @@ export function CreateVaultForm() {
         <input
           type="text"
           id="vault-name"
+          maxLength={64}
           placeholder="e.g. My BTC Nest Egg"
           aria-invalid={errors.name ? "true" : "false"}
           aria-describedby={errors.name ? "vault-name-error" : undefined}
