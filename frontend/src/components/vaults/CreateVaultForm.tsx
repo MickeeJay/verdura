@@ -6,9 +6,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createVaultSchema, type CreateVaultInput } from "@/lib/validation/vault";
 import { durationDaysToBlocks } from "@/lib/utils/blocks";
 import { fetchSimulatedYield } from "@/lib/contracts/yield-router";
+import { buildCreateVaultTx } from "@/lib/contracts/savings-vault";
+import { openContractCall } from "@stacks/connect";
 import { useWallet } from "@/hooks/useWallet";
+import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { DurationSlider } from "./DurationSlider";
 import { YieldToggle } from "./YieldToggle";
+
+type TxState =
+  | { status: "idle" }
+  | { status: "pending" }
+  | { status: "success"; txId: string }
+  | { status: "error"; message: string };
 
 export function CreateVaultForm() {
   const { stacksNetwork } = useWallet();
@@ -33,6 +42,7 @@ export function CreateVaultForm() {
   const [simulatedAmount, setSimulatedAmount] = useState(100_000_000);
   const [estimatedYield, setEstimatedYield] = useState<number | null>(null);
   const [yieldLoading, setYieldLoading] = useState(false);
+  const [txState, setTxState] = useState<TxState>({ status: "idle" });
 
   const updateYieldPreview = useCallback(async () => {
     if (!watchedYield) {
@@ -60,8 +70,36 @@ export function CreateVaultForm() {
     return () => clearTimeout(timeout);
   }, [updateYieldPreview]);
 
-  const onSubmit = (data: CreateVaultInput) => {
-    console.log("Form submitted:", data);
+  const onSubmit = async (data: CreateVaultInput) => {
+    setTxState({ status: "pending" });
+    try {
+      const durationBlocks = durationDaysToBlocks(data.durationDays);
+      const txOptions = buildCreateVaultTx(
+        {
+          name: data.name,
+          durationBlocks,
+          yieldEnabled: data.yieldEnabled,
+        },
+        stacksNetwork
+      );
+
+      await openContractCall({
+        ...txOptions,
+        appDetails: {
+          name: "Verdura",
+          icon: "https://raw.githubusercontent.com/MickeeJay/verdura/main/docs/logo.png",
+        },
+        onFinish: (result) => {
+          setTxState({ status: "success", txId: result.txId });
+        },
+        onCancel: () => {
+          setTxState({ status: "idle" });
+        },
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Transaction failed";
+      setTxState({ status: "error", message });
+    }
   };
 
   return (
@@ -176,11 +214,51 @@ export function CreateVaultForm() {
         </div>
       )}
 
+      {/* Transaction State Feedback */}
+      {txState.status === "pending" && (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 text-sm" role="status" aria-live="polite">
+          <Loader2 className="size-5 text-amber-500 animate-spin" />
+          <span className="text-amber-600 dark:text-amber-400 font-medium">Confirming on Stacks…</span>
+        </div>
+      )}
+
+      {txState.status === "success" && (
+        <div className="flex flex-col gap-2 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-sm" role="status" aria-live="polite">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="size-5 text-emerald-500" />
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium">Vault created successfully!</span>
+          </div>
+          <a
+            href={`https://explorer.hiro.so/txid/${txState.txId}?chain=testnet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-emerald-500 hover:underline font-mono truncate"
+          >
+            View transaction: {txState.txId}
+          </a>
+        </div>
+      )}
+
+      {txState.status === "error" && (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20 text-sm" role="alert" aria-live="assertive">
+          <AlertCircle className="size-5 text-destructive" />
+          <span className="text-destructive font-medium">{txState.message}</span>
+        </div>
+      )}
+
       <button
         type="submit"
-        className="w-full flex items-center justify-center h-10 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+        disabled={txState.status === "pending"}
+        className="w-full flex items-center justify-center gap-2 h-10 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Create Vault
+        {txState.status === "pending" ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Confirming…
+          </>
+        ) : (
+          "Create Vault"
+        )}
       </button>
     </form>
   );
