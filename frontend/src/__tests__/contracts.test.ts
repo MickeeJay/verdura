@@ -14,6 +14,7 @@ import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData } fro
 import { parseProfile, fetchProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
+import { fetchYieldBalance } from "../lib/contracts/yield-router";
 
 // Mock the fetchCallReadOnlyFunction from @stacks/transactions to prevent actual network calls
 jest.mock("@stacks/transactions", () => {
@@ -235,5 +236,47 @@ describe("fetchProfile", () => {
     );
 
     expect(result).toBeNull();
+  });
+});
+
+describe("fetchYieldBalance", () => {
+  beforeEach(() => {
+    mockFetchReadOnly.mockReset();
+  });
+
+  it("returns numeric balance from (ok uint) response", async () => {
+    mockFetchReadOnly.mockResolvedValue(responseOkCV(uintCV(12500)));
+
+    const result = await fetchYieldBalance(
+      1,
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(12500);
+  });
+
+  it("returns 0 for (ok u0) response", async () => {
+    mockFetchReadOnly.mockResolvedValue(responseOkCV(uintCV(0)));
+
+    const result = await fetchYieldBalance(
+      1,
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(0);
+  });
+
+  it("returns 0 when fetch throws an error", async () => {
+    mockFetchReadOnly.mockRejectedValue(new Error("Network error"));
+
+    const result = await fetchYieldBalance(
+      1,
+      "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(0);
   });
 });
