@@ -14,7 +14,7 @@ import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData } fro
 import { parseProfile, fetchProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";
-import { fetchYieldBalance } from "../lib/contracts/yield-router";
+import { fetchYieldBalance, fetchSimulatedYield } from "../lib/contracts/yield-router";
 
 // Mock the fetchCallReadOnlyFunction from @stacks/transactions to prevent actual network calls
 jest.mock("@stacks/transactions", () => {
@@ -280,3 +280,34 @@ describe("fetchYieldBalance", () => {
     expect(result).toBe(0);
   });
 });
+
+describe("fetchSimulatedYield", () => {
+  beforeEach(() => {
+    mockFetchReadOnly.mockReset();
+  });
+
+  it("returns numeric simulated yield from uint response", async () => {
+    mockFetchReadOnly.mockResolvedValue(uintCV(320));
+
+    const result = await fetchSimulatedYield(
+      1000,
+      100,
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(320);
+  });
+
+  it("returns 0 when simulated yield call throws", async () => {
+    mockFetchReadOnly.mockRejectedValue(new Error("Network error"));
+
+    const result = await fetchSimulatedYield(
+      1000,
+      100,
+      STACKS_TESTNET
+    );
+
+    expect(result).toBe(0);
+  });
+});
+
