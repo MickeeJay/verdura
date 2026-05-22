@@ -11,7 +11,7 @@ import {
   falseCV,
   cvToValue
 } from "@stacks/transactions";
-import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, VaultData, buildCreateVaultTx, buildDepositTx, buildWithdrawTx } from "../lib/contracts/savings-vault";
+import { parseVault, fetchAllVaultsForOwner, fetchIsVaultMature, buildCreateVaultTx, buildDepositTx, buildWithdrawTx } from "../lib/contracts/savings-vault";
 import { parseProfile, fetchProfile } from "../lib/contracts/savings-profile";
 import { STACKS_MAINNET, STACKS_TESTNET, STACKS_DEVNET } from "@stacks/network";
 import { getContractAddresses, CONTRACT_ADDRESSES } from "../lib/constants";

@@ -1,6 +1,5 @@
 import {
   ContractCallOptions,
-  makeContractCall,
   stringAsciiCV,
   uintCV,
   boolCV,
