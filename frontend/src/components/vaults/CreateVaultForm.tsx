@@ -83,7 +83,6 @@ export function CreateVaultForm() {
         stacksNetwork
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await openContractCall({
         ...txOptions,
         appDetails: {
@@ -96,7 +95,7 @@ export function CreateVaultForm() {
         onCancel: () => {
           setTxState({ status: "idle" });
         },
-      } as any);
+      } as unknown as Parameters<typeof openContractCall>[0]);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Transaction failed";
       setTxState({ status: "error", message });
