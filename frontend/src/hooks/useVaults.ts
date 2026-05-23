@@ -8,12 +8,13 @@ export function useVaults() {
   const { address, stacksNetwork } = useWallet();
 
   return useQuery<VaultData[]>({
-    queryKey: ["vaults", address],
-    queryFn: () => {
+    queryKey: ["vaults", address] as const,
+    queryFn: async (): Promise<VaultData[]> => {
       if (!address) {
-        return Promise.resolve([]);
+        return [];
       }
-      return fetchAllVaultsForOwner(address, stacksNetwork);
+      const data = await fetchAllVaultsForOwner(address, stacksNetwork);
+      return data;
     },
     enabled: !!address,
     refetchOnWindowFocus: true,
