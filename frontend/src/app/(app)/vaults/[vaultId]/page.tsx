@@ -201,7 +201,14 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <span>Created on {creationDate || "Loading..."}</span>
                   <span>•</span>
-                  <span>Block #{startBlock}</span>
+                  <a
+                    href={`https://explorer.hiro.so/block/${startBlock}?chain=testnet`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline text-emerald-500 font-mono font-medium"
+                  >
+                    Block #{startBlock}
+                  </a>
                 </p>
               </div>
               <VaultStatusBadge status={status} />
