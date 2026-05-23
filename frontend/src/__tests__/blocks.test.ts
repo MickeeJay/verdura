@@ -23,6 +23,12 @@ describe("durationDaysToBlocks", () => {
 });
 
 describe("blocksToTimeRemaining", () => {
+  it("returns 'Ready to withdraw' if currentBlock or endBlock is NaN", () => {
+    expect(blocksToTimeRemaining(NaN, 100)).toBe("Ready to withdraw");
+    expect(blocksToTimeRemaining(100, NaN)).toBe("Ready to withdraw");
+    expect(blocksToTimeRemaining(NaN, NaN)).toBe("Ready to withdraw");
+  });
+
   it("returns 'Ready to withdraw' if currentBlock is equal to endBlock", () => {
     expect(blocksToTimeRemaining(100, 100)).toBe("Ready to withdraw");
   });
