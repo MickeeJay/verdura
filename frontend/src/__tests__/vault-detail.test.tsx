@@ -197,6 +197,18 @@ describe("Vault Detail Page Components", () => {
 
       expect(await screen.findByRole("alert")).toHaveTextContent("Amount exceeds available wallet balance");
     });
+
+    it("validates that non-numeric amount displays an error", async () => {
+      renderWithProviders(<DepositForm vaultId={1} />);
+
+      const input = await screen.findByLabelText(/amount/i);
+      fireEvent.change(input, { target: { value: "abc" } });
+
+      const submitBtn = screen.getByRole("button", { name: /deposit savings/i });
+      fireEvent.click(submitBtn);
+
+      expect(await screen.findByRole("alert")).toHaveTextContent("Amount must be a positive number");
+    });
   });
 
   describe("Vault Progress Bar and Details", () => {
