@@ -36,6 +36,15 @@ async function fetchCurrentBlockHeight(): Promise<number> {
   }
 }
 
+/**
+ * Custom React Query hook that polls the Hiro Stacks API for the latest block height.
+ * 
+ * Query Key: `['currentBlock']`
+ * Polling Interval: 60 seconds (prevents rate-limiting the Hiro API).
+ * Background Polling: Disabled (does not poll when the tab is inactive/backgrounded).
+ * 
+ * @returns Query result containing the latest Stacks block height (number).
+ */
 export function useCurrentBlock() {
   return useQuery<number>({
     queryKey: ["currentBlock"],
