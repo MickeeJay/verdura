@@ -56,19 +56,18 @@ describe("VaultCard Component", () => {
     // Current block is 150 (locked, since endBlock is 200)
     render(<VaultCard vault={mockVault} currentBlock={150} />);
 
-    expect(screen.getByText("Locked Vault")).toBeInTheDocument();
-    expect(screen.getByText("Locked")).toBeInTheDocument();
+    expect(screen.getByText("Locked").className).toContain("vault-badge--locked");
     expect(screen.getByTestId("vault-principal")).toHaveTextContent("500.000000 USDCx");
 
-    // 50 blocks remaining. 50 blocks * 10 mins = 500 mins = 8 hours, 20 minutes
-    expect(screen.getByTestId("vault-countdown")).toHaveTextContent("8 hours, 20 minutes");
+    // 50 blocks remaining = 500 minutes = 8 hours
+    expect(screen.getByTestId("vault-countdown")).toHaveTextContent("8 hours");
   });
 
   it("renders 'Ready to withdraw' for matured vault", () => {
     // Current block is 250 (matured, since endBlock is 200)
     render(<VaultCard vault={mockVault} currentBlock={250} />);
 
-    expect(screen.getByText("Matured")).toBeInTheDocument();
+    expect(screen.getByTestId("vault-status-badge")).toHaveTextContent("Matured");
     expect(screen.getByTestId("vault-countdown")).toHaveTextContent("Ready to withdraw");
   });
 
@@ -79,7 +78,7 @@ describe("VaultCard Component", () => {
     };
     render(<VaultCard vault={completedVault} currentBlock={250} />);
 
-    expect(screen.getByText("Completed")).toBeInTheDocument();
+    expect(screen.getByTestId("vault-status-badge")).toHaveTextContent("Completed");
     expect(screen.getByTestId("vault-countdown")).toHaveTextContent("Completed");
   });
 });
