@@ -62,3 +62,18 @@ export function blocksToTimeRemaining(currentBlock: number, endBlock: number): s
 
   return "Ready to withdraw";
 }
+
+/**
+ * Approximates the date of a block height relative to the current block height.
+ * Uses 600 seconds (10 minutes) per block to backtrack or project forward.
+ * 
+ * @param block - The target block height
+ * @param currentBlock - The current block height
+ * @returns The approximated Date
+ */
+export function blockToApproximateDate(block: number, currentBlock: number): Date {
+  const blockDifference = block - currentBlock;
+  const secondsDifference = blockDifference * 600;
+  return new Date(Date.now() + secondsDifference * 1000);
+}
+
