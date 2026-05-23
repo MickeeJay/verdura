@@ -8,14 +8,17 @@ import { USDCX_DECIMALS, STX_DECIMALS } from "@/lib/constants";
  * @returns Formatted string with proper decimal places, e.g. "1,000.000000"
  */
 export function formatTokenAmount(amount: bigint, decimals: number = USDCX_DECIMALS): string {
+  const isNegative = amount < 0n;
+  const absoluteAmount = isNegative ? -amount : amount;
+
   const divisor = BigInt(10 ** decimals);
-  const wholePart = amount / divisor;
-  const fractionalPart = amount % divisor;
+  const wholePart = absoluteAmount / divisor;
+  const fractionalPart = absoluteAmount % divisor;
 
   const fractionalStr = fractionalPart.toString().padStart(decimals, "0");
   const wholeStr = wholePart.toLocaleString("en-US");
 
-  return `${wholeStr}.${fractionalStr}`;
+  return `${isNegative ? "-" : ""}${wholeStr}.${fractionalStr}`;
 }
 
 /**
