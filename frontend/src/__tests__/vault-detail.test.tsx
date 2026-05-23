@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { WithdrawButton } from "../components/vaults/WithdrawButton";
 import { DepositForm } from "../components/vaults/DepositForm";
+import { TxHistoryList } from "../components/txs/TxHistoryList";
 import VaultDetailPage from "../app/(app)/vaults/[vaultId]/page";
 import { WalletContext } from "../contexts/WalletContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -261,6 +262,50 @@ describe("Vault Detail Page Components", () => {
       expect(progressBar).toBeInTheDocument();
       expect(progressBar).toHaveAttribute("aria-valuenow", "100");
       expect(progressBar.style.width).toBe("100%");
+    });
+  });
+
+  describe("TxHistoryList Component", () => {
+    it("renders empty state message when no transactions", () => {
+      render(
+        <TxHistoryList
+          transactions={[]}
+          isLoading={false}
+          hasMore={false}
+          onLoadMore={jest.fn()}
+        />
+      );
+
+      expect(screen.getByTestId("tx-history-empty")).toBeInTheDocument();
+      expect(
+        screen.getByText("No transaction history found for this vault.")
+      ).toBeInTheDocument();
+    });
+
+    it("renders list items when transactions are provided", () => {
+      const mockTxs = [
+        {
+          txId: "0xtxid123",
+          type: "Deposit" as const,
+          amount: 50000000n, // 50 STX
+          timestamp: 1716480000,
+          blockHeight: 12345,
+          status: "success" as const,
+        },
+      ];
+
+      render(
+        <TxHistoryList
+          transactions={mockTxs}
+          isLoading={false}
+          hasMore={false}
+          onLoadMore={jest.fn()}
+        />
+      );
+
+      expect(screen.getByText("Deposit")).toBeInTheDocument();
+      expect(screen.getByText("+50.000000 STX")).toBeInTheDocument();
+      expect(screen.getByText("#12345")).toBeInTheDocument();
     });
   });
 });
