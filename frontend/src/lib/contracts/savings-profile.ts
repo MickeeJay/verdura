@@ -64,3 +64,56 @@ export async function fetchProfile(
   }
 }
 
+export async function fetchLeaderboardScore(
+  address: string,
+  network: StacksNetwork
+): Promise<bigint> {
+  const { savingsProfile } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsProfile.split(".");
+
+  try {
+    const result = await callReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: "get-leaderboard-score",
+      functionArgs: [
+        standardPrincipalCV(address),
+      ],
+      senderAddress: address,
+      network,
+    });
+
+    return cvToValue(result) as bigint;
+  } catch (error) {
+    console.error(`Error fetching leaderboard score for address ${address}:`, error);
+    return 0n;
+  }
+}
+
+export async function fetchSavingsStreak(
+  address: string,
+  network: StacksNetwork
+): Promise<bigint> {
+  const { savingsProfile } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsProfile.split(".");
+
+  try {
+    const result = await callReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: "get-savings-streak",
+      functionArgs: [
+        standardPrincipalCV(address),
+      ],
+      senderAddress: address,
+      network,
+    });
+
+    return cvToValue(result) as bigint;
+  } catch (error) {
+    console.error(`Error fetching savings streak for address ${address}:`, error);
+    return 0n;
+  }
+}
+
+
