@@ -8,14 +8,16 @@ export function useProfile() {
   const { address, stacksNetwork } = useWallet();
 
   return useQuery<ProfileData | null>({
-    queryKey: ["profile", address],
-    queryFn: () => {
+    queryKey: ["profile", address] as const,
+    queryFn: async (): Promise<ProfileData | null> => {
       if (!address) {
-        return Promise.resolve(null);
+        return null;
       }
-      return fetchProfile(address, stacksNetwork);
+      const data = await fetchProfile(address, stacksNetwork);
+      return data;
     },
     enabled: !!address,
+    staleTime: 60_000,
     refetchOnWindowFocus: true,
   });
 }
