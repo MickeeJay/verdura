@@ -14,19 +14,26 @@ interface BlockResponse {
 }
 
 async function fetchCurrentBlockHeight(): Promise<number> {
-  const response = await fetch(`${HIRO_API_URL}/extended/v1/block?limit=1`);
+  try {
+    const response = await fetch(`${HIRO_API_URL}/extended/v1/block?limit=1`);
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch block height: ${response.status}`);
+    if (!response.ok) {
+      console.warn(`Hiro API response was not OK: ${response.status} - ${response.statusText}`);
+      throw new Error(`Failed to fetch block height: ${response.status}`);
+    }
+
+    const data: BlockResponse = await response.json();
+
+    if (!data.results || data.results.length === 0) {
+      console.error("Hiro API response returned an empty block list.");
+      throw new Error("No block data returned from Hiro API");
+    }
+
+    return data.results[0].height;
+  } catch (error) {
+    console.error("Error encountered in fetchCurrentBlockHeight:", error);
+    throw error;
   }
-
-  const data: BlockResponse = await response.json();
-
-  if (!data.results || data.results.length === 0) {
-    throw new Error("No block data returned from Hiro API");
-  }
-
-  return data.results[0].height;
 }
 
 export function useCurrentBlock() {
