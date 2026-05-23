@@ -92,3 +92,188 @@
     @apply font-sans;
   }
 }
+
+/* ── Vault Dashboard Styles ────────────────────────────────── */
+
+@layer components {
+  /* Badge base */
+  .vault-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide;
+    transition: all 0.2s ease;
+  }
+
+  .vault-badge--matured {
+    background: oklch(0.87 0.15 145);
+    color: oklch(0.3 0.12 145);
+  }
+
+  .vault-badge--locked {
+    background: oklch(0.9 0.12 85);
+    color: oklch(0.35 0.1 85);
+  }
+
+  .vault-badge--completed {
+    background: oklch(0.92 0 0);
+    color: oklch(0.45 0 0);
+  }
+
+  /* Stats card */
+  .stats-card {
+    @apply relative overflow-hidden rounded-2xl border border-border p-6;
+    background: var(--card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px oklch(0 0 0 / 8%);
+  }
+
+  .stats-card__label {
+    @apply text-sm font-medium;
+    color: var(--muted-foreground);
+  }
+
+  .stats-card__value {
+    @apply mt-1 text-2xl font-bold tracking-tight;
+    color: var(--card-foreground);
+  }
+
+  .stats-card__icon {
+    @apply absolute -right-2 -top-2 opacity-5;
+    font-size: 5rem;
+  }
+
+  /* Vault card */
+  .vault-card {
+    @apply relative overflow-hidden rounded-2xl border border-border;
+    background: var(--card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .vault-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px oklch(0 0 0 / 10%);
+    border-color: oklch(0.7 0.08 145);
+  }
+
+  .vault-card__header {
+    @apply flex items-center justify-between border-b border-border px-6 py-4;
+  }
+
+  .vault-card__name {
+    @apply text-base font-semibold tracking-tight;
+    color: var(--card-foreground);
+  }
+
+  .vault-card__body {
+    @apply space-y-4 px-6 py-5;
+  }
+
+  .vault-card__row {
+    @apply flex items-center justify-between;
+  }
+
+  .vault-card__label {
+    @apply text-sm;
+    color: var(--muted-foreground);
+  }
+
+  .vault-card__value {
+    @apply text-sm font-semibold tabular-nums;
+    color: var(--card-foreground);
+  }
+
+  .vault-card__countdown {
+    @apply text-sm font-medium;
+    color: oklch(0.55 0.1 145);
+  }
+
+  .vault-card__countdown--ready {
+    color: oklch(0.55 0.18 145);
+    font-weight: 700;
+  }
+
+  /* Dashboard grid */
+  .dashboard-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+
+  .stats-grid {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border px-8 py-16 text-center;
+    background: var(--card);
+  }
+
+  .empty-state__icon {
+    @apply mb-6 rounded-full p-6;
+    background: oklch(0.95 0.04 145);
+    color: oklch(0.5 0.15 145);
+  }
+
+  .empty-state__title {
+    @apply mb-2 text-xl font-bold;
+    color: var(--card-foreground);
+  }
+
+  .empty-state__description {
+    @apply mb-8 max-w-sm text-sm leading-relaxed;
+    color: var(--muted-foreground);
+  }
+
+  .empty-state__cta {
+    @apply inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all;
+    background: oklch(0.5 0.18 145);
+    color: white;
+  }
+
+  .empty-state__cta:hover {
+    background: oklch(0.45 0.2 145);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px oklch(0.5 0.18 145 / 35%);
+  }
+
+  /* Refresh button */
+  .refresh-btn {
+    @apply inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium transition-all;
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+
+  .refresh-btn:hover {
+    background: var(--accent);
+    border-color: oklch(0.7 0.08 145);
+  }
+
+  .refresh-btn:active {
+    transform: scale(0.97);
+  }
+
+  .refresh-btn__icon {
+    transition: transform 0.5s ease;
+  }
+
+  .refresh-btn:hover .refresh-btn__icon {
+    transform: rotate(180deg);
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply animate-pulse rounded-lg;
+    background: var(--muted);
+  }
+
+  .skeleton--card {
+    @apply h-52 rounded-2xl;
+  }
+
+  .skeleton--stat {
+    @apply h-24 rounded-2xl;
+  }
+}
