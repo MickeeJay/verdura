@@ -220,9 +220,11 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
                     : "Fetching blocks..."}
                 </span>
               </div>
-              <div className="w-full bg-neutral-100 dark:bg-neutral-800 h-3.5 rounded-full overflow-hidden border border-border/50">
+              <div className="w-full bg-neutral-100 dark:bg-neutral-800 h-3.5 rounded-full overflow-hidden border border-border/50 relative">
                 <div
-                  className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full transition-all duration-500 ease-out"
+                  className={`bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 h-full rounded-full transition-all duration-500 ease-out ${
+                    status === "locked" ? "animate-[pulse_3s_infinite]" : ""
+                  }`}
                   style={{ width: `${progressPercent}%` }}
                   data-testid="vault-progress-bar"
                   role="progressbar"
