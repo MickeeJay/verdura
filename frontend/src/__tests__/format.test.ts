@@ -17,7 +17,7 @@ describe("formatTokenAmount Utility", () => {
 
   it("handles custom decimal parameters correctly", () => {
     expect(formatTokenAmount(100000n, 2)).toBe("1,000.00");
-    expect(formatTokenAmount(100n, 0)).toBe("100.");
+    expect(formatTokenAmount(100n, 0)).toBe("100");
   });
 });
 

@@ -13,10 +13,14 @@ export function formatTokenAmount(amount: bigint, decimals: number = USDCX_DECIM
 
   const divisor = BigInt(10 ** decimals);
   const wholePart = absoluteAmount / divisor;
-  const fractionalPart = absoluteAmount % divisor;
-
-  const fractionalStr = fractionalPart.toString().padStart(decimals, "0");
   const wholeStr = wholePart.toLocaleString("en-US");
+
+  if (decimals <= 0) {
+    return `${isNegative ? "-" : ""}${wholeStr}`;
+  }
+
+  const fractionalPart = absoluteAmount % divisor;
+  const fractionalStr = fractionalPart.toString().padStart(decimals, "0");
 
   return `${isNegative ? "-" : ""}${wholeStr}.${fractionalStr}`;
 }
