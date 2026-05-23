@@ -122,6 +122,11 @@ export async function fetchVault(
   vaultId: number,
   network: StacksNetwork
 ): Promise<VaultData | null> {
+  if (isNaN(vaultId) || vaultId <= 0) {
+    console.warn(`Invalid vaultId passed to fetchVault: ${vaultId}`);
+    return null;
+  }
+
   const { savingsVault } = getContractAddresses(network);
   const [contractAddress, contractName] = savingsVault.split(".");
 
