@@ -50,6 +50,7 @@ export interface FilteredVaultTx {
   timestamp: number;
   blockHeight: number;
   status: "success" | "pending" | "failed";
+  vaultId?: number;
 }
 
 const HIRO_API_URL = process.env.NEXT_PUBLIC_HIRO_API_URL ?? "https://api.testnet.hiro.so";
@@ -68,23 +69,30 @@ async function fetchContractTransactions(
 }
 
 /**
- * Custom React Query hook to retrieve and paginate transaction history for a specific vault.
- * Filters the transaction history of the savings-vault contract for relevant vault events.
+ * Custom React Query hook to retrieve and paginate transaction history.
+ * If vaultId is provided and > 0, filters the transaction history of the savings-vault contract for that vault.
+ * If vaultId is omitted or <= 0, retrieves and filters all savings-vault transactions for the connected user.
  */
-export function useVaultTxHistory(vaultId: number, initialLimit = 50) {
-  const { stacksNetwork } = useWallet();
+export function useVaultTxHistory(vaultId?: number, initialLimit = 50) {
+  const { address, stacksNetwork } = useWallet();
   const { savingsVault } = getContractAddresses(stacksNetwork);
   const offset = 0;
   const [limit, setLimit] = useState(initialLimit);
 
-  const queryKey = ["vault-tx-history", savingsVault, vaultId, limit, offset] as const;
+  const isAll = !vaultId || vaultId <= 0;
+  const queryKey = ["vault-tx-history", savingsVault, isAll ? "all" : vaultId, address, limit, offset] as const;
 
   const query = useQuery({
     queryKey,
     queryFn: async () => {
-      const data = await fetchContractTransactions(savingsVault, limit, offset);
+      const targetAddress = isAll ? (address || "") : savingsVault;
+      if (!targetAddress) {
+        return { transactions: [], total: 0, hasMore: false };
+      }
+
+      const data = await fetchContractTransactions(targetAddress, limit, offset);
       
-      // Filter transactions related to this vault ID
+      // Filter transactions related to this vault
       const filtered: FilteredVaultTx[] = [];
       const targetRepr = `u${vaultId}`;
 
@@ -110,34 +118,43 @@ export function useVaultTxHistory(vaultId: number, initialLimit = 50) {
           continue;
         }
 
-        // For create-vault, wait, we might not have a vault-id in the input arguments,
-        // but we might want to show it. Actually, wait! The create-vault response returns
-        // the vault ID, but in the transaction list we'd have to know the resulting vault ID.
-        // Let's check: can we match create-vault if the transaction created this vault?
-        // Wait, for deposit/withdraw, the first argument 'vault-id' is matched.
-        // Let's inspect the arguments:
         const vaultIdArg = args.find(
-          (arg) => arg.name === "vault-id" || arg.name === "vault-id"
+          (arg) => arg.name === "vault-id"
         );
 
         let isMatch = false;
         let amount = 0n;
         let type: "Deposit" | "Withdraw" | "Create" = "Deposit";
+        let txVaultId = 0;
 
-        if (isDeposit && vaultIdArg && vaultIdArg.repr === targetRepr) {
-          isMatch = true;
-          type = "Deposit";
-          const amountArg = args.find((arg) => arg.name === "amount");
-          if (amountArg) {
-            // Amount is represented like "u1000000"
-            amount = BigInt(amountArg.repr.replace(/^u/, ""));
+        if (vaultIdArg) {
+          txVaultId = Number(vaultIdArg.repr.replace(/^u/, ""));
+        }
+
+        if (isAll) {
+          if (isDeposit || isWithdraw) {
+            isMatch = true;
+            type = isDeposit ? "Deposit" : "Withdraw";
+            if (isDeposit) {
+              const amountArg = args.find((arg) => arg.name === "amount");
+              if (amountArg) {
+                amount = BigInt(amountArg.repr.replace(/^u/, ""));
+              }
+            }
           }
-        } else if (isWithdraw && vaultIdArg && vaultIdArg.repr === targetRepr) {
-          isMatch = true;
-          type = "Withdraw";
-          // Withdraw principal is not in the args, but we will display that it's a withdraw event.
-          // In actual UX, we can show the transaction. Let's set amount to 0 or we can approximate it.
-          amount = 0n; 
+        } else {
+          if (isDeposit && vaultIdArg && vaultIdArg.repr === targetRepr) {
+            isMatch = true;
+            type = "Deposit";
+            const amountArg = args.find((arg) => arg.name === "amount");
+            if (amountArg) {
+              amount = BigInt(amountArg.repr.replace(/^u/, ""));
+            }
+          } else if (isWithdraw && vaultIdArg && vaultIdArg.repr === targetRepr) {
+            isMatch = true;
+            type = "Withdraw";
+            amount = 0n; 
+          }
         }
 
         if (isMatch) {
@@ -148,6 +165,7 @@ export function useVaultTxHistory(vaultId: number, initialLimit = 50) {
             timestamp: tx.burn_block_time || Math.floor(Date.now() / 1000),
             blockHeight: tx.block_height,
             status: tx.tx_status,
+            vaultId: txVaultId > 0 ? txVaultId : undefined,
           });
         }
       }
@@ -159,6 +177,7 @@ export function useVaultTxHistory(vaultId: number, initialLimit = 50) {
       };
     },
     refetchInterval: 30_000,
+    enabled: isAll ? !!address : true,
   });
 
   const loadMore = () => {
@@ -173,3 +192,4 @@ export function useVaultTxHistory(vaultId: number, initialLimit = 50) {
     hasMore: !!query.data?.hasMore,
   };
 }
+
