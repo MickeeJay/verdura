@@ -264,7 +264,7 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
                   Estimated Yield
                 </span>
                 <p className="text-lg font-bold text-emerald-500 font-mono" data-testid="detail-yield">
-                  {formatSTX(estimatedYield)} STX
+                  {vault.yieldEnabled ? `${formatSTX(estimatedYield)} STX` : "Disabled"}
                 </p>
               </div>
 
