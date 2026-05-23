@@ -5,18 +5,27 @@ import { useWallet } from "@/hooks/useWallet";
 import { getContractAddresses } from "@/lib/constants";
 import { useState } from "react";
 
+/**
+ * Interface representing argument values in Stacks transactions from Hiro API.
+ */
 export interface HiroTxArg {
   hex: string;
   repr: string;
   name: string;
 }
 
+/**
+ * Interface representing a smart contract call event in the transaction history.
+ */
 export interface HiroContractCall {
   contract_id: string;
   function_name: string;
   function_args?: HiroTxArg[];
 }
 
+/**
+ * Interface representing a Stacks transaction from the Hiro blockchain API.
+ */
 export interface HiroTransaction {
   tx_id: string;
   tx_status: "success" | "pending" | "failed";
