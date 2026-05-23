@@ -2,10 +2,15 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { WithdrawButton } from "../components/vaults/WithdrawButton";
 import { DepositForm } from "../components/vaults/DepositForm";
+import VaultDetailPage from "../app/(app)/vaults/[vaultId]/page";
 import { WalletContext } from "../contexts/WalletContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { openContractCall } from "@stacks/connect";
 import { STACKS_TESTNET } from "@stacks/network";
+import { useWallet } from "../hooks/useWallet";
+import { useCurrentBlock } from "../hooks/useCurrentBlock";
+import { useVaultTxHistory } from "../hooks/useVaultTxHistory";
+import { fetchVault, fetchIsVaultMature } from "../lib/contracts/savings-vault";
 
 // Mock @stacks/connect
 jest.mock("@stacks/connect", () => {
@@ -16,8 +21,30 @@ jest.mock("@stacks/connect", () => {
   };
 });
 
+// Mock hooks
+jest.mock("../hooks/useWallet", () => ({
+  useWallet: jest.fn(),
+}));
+
+jest.mock("../hooks/useCurrentBlock", () => ({
+  useCurrentBlock: jest.fn(),
+}));
+
+jest.mock("../hooks/useVaultTxHistory", () => ({
+  useVaultTxHistory: jest.fn(),
+}));
+
+jest.mock("../lib/contracts/savings-vault", () => {
+  const actual = jest.requireActual("../lib/contracts/savings-vault");
+  return {
+    ...actual,
+    fetchVault: jest.fn(),
+    fetchIsVaultMature: jest.fn(),
+  };
+});
+
 // Helper wrapper for react-query provider
-const renderWithProviders = (ui: React.ReactElement, contextValue: any) => {
+const renderWithProviders = (ui: React.ReactElement, contextValue?: any) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -26,8 +53,17 @@ const renderWithProviders = (ui: React.ReactElement, contextValue: any) => {
     },
   });
 
+  const ctx = contextValue || {
+    address: "ST3924151251261313626246",
+    isConnected: true,
+    network: "testnet" as const,
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+    stacksNetwork: STACKS_TESTNET,
+  };
+
   return render(
-    <WalletContext.Provider value={contextValue}>
+    <WalletContext.Provider value={ctx}>
       <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
     </WalletContext.Provider>
   );
@@ -45,6 +81,16 @@ describe("Vault Detail Page Components", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Default mock setups
+    (useWallet as jest.Mock).mockReturnValue(mockContextValue);
+    (useCurrentBlock as jest.Mock).mockReturnValue({ data: 100 });
+    (useVaultTxHistory as jest.Mock).mockReturnValue({
+      data: { transactions: [], total: 0, hasMore: false },
+      isLoading: false,
+      loadMore: jest.fn(),
+      hasMore: false,
+    });
   });
 
   describe("WithdrawButton State", () => {
@@ -56,8 +102,7 @@ describe("Vault Detail Page Components", () => {
           isActive={true}
           currentBlock={150}
           endBlock={200}
-        />,
-        mockContextValue
+        />
       );
 
       // Verify that the disabled withdraw button is rendered
@@ -79,8 +124,7 @@ describe("Vault Detail Page Components", () => {
           isActive={true}
           currentBlock={250}
           endBlock={200}
-        />,
-        mockContextValue
+        />
       );
 
       // Verify that the active withdraw button is rendered
@@ -102,8 +146,7 @@ describe("Vault Detail Page Components", () => {
           isActive={true}
           currentBlock={250}
           endBlock={200}
-        />,
-        mockContextValue
+        />
       );
 
       const btn = screen.getByTestId("withdraw-button-enabled");
@@ -130,7 +173,7 @@ describe("Vault Detail Page Components", () => {
     });
 
     it("validates that amount must be positive", async () => {
-      renderWithProviders(<DepositForm vaultId={1} />, mockContextValue);
+      renderWithProviders(<DepositForm vaultId={1} />);
 
       // Fill in negative amount
       const input = await screen.findByLabelText(/amount/i);
@@ -143,7 +186,7 @@ describe("Vault Detail Page Components", () => {
     });
 
     it("validates that amount cannot exceed available wallet balance", async () => {
-      renderWithProviders(<DepositForm vaultId={1} />, mockContextValue);
+      renderWithProviders(<DepositForm vaultId={1} />);
 
       // Fill in exceeding amount (150 STX when max balance is 100 STX)
       const input = await screen.findByLabelText(/amount/i);
@@ -153,6 +196,59 @@ describe("Vault Detail Page Components", () => {
       fireEvent.click(submitBtn);
 
       expect(await screen.findByRole("alert")).toHaveTextContent("Amount exceeds available wallet balance");
+    });
+  });
+
+  describe("Vault Progress Bar and Details", () => {
+    const mockVaultData = {
+      id: 1,
+      owner: "ST3924151251261313626246",
+      name: "Commitment Nest Egg",
+      principalAmount: 100000000n, // 100 USDCx
+      startBlock: 100n,
+      endBlock: 200n,
+      isActive: true,
+      yieldEnabled: true,
+      yieldShares: 100n,
+    };
+
+    it("renders 0% progress correctly at start block", async () => {
+      (fetchVault as jest.Mock).mockResolvedValue(mockVaultData);
+      (fetchIsVaultMature as jest.Mock).mockResolvedValue(false);
+      (useCurrentBlock as jest.Mock).mockReturnValue({ data: 100 });
+
+      renderWithProviders(<VaultDetailPage params={{ vaultId: "1" }} />);
+
+      const progressBar = await screen.findByTestId("vault-progress-bar");
+      expect(progressBar).toBeInTheDocument();
+      expect(progressBar).toHaveAttribute("aria-valuenow", "0");
+      expect(progressBar.style.width).toBe("0%");
+    });
+
+    it("renders 50% progress correctly at mid point", async () => {
+      (fetchVault as jest.Mock).mockResolvedValue(mockVaultData);
+      (fetchIsVaultMature as jest.Mock).mockResolvedValue(false);
+      (useCurrentBlock as jest.Mock).mockReturnValue({ data: 150 });
+
+      renderWithProviders(<VaultDetailPage params={{ vaultId: "1" }} />);
+
+      const progressBar = await screen.findByTestId("vault-progress-bar");
+      expect(progressBar).toBeInTheDocument();
+      expect(progressBar).toHaveAttribute("aria-valuenow", "50");
+      expect(progressBar.style.width).toBe("50%");
+    });
+
+    it("renders and clamps at 100% progress when block height exceeds endBlock", async () => {
+      (fetchVault as jest.Mock).mockResolvedValue(mockVaultData);
+      (fetchIsVaultMature as jest.Mock).mockResolvedValue(true);
+      (useCurrentBlock as jest.Mock).mockReturnValue({ data: 250 }); // well past endBlock 200
+
+      renderWithProviders(<VaultDetailPage params={{ vaultId: "1" }} />);
+
+      const progressBar = await screen.findByTestId("vault-progress-bar");
+      expect(progressBar).toBeInTheDocument();
+      expect(progressBar).toHaveAttribute("aria-valuenow", "100");
+      expect(progressBar.style.width).toBe("100%");
     });
   });
 });
