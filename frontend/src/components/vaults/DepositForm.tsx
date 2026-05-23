@@ -91,7 +91,11 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
     setTxState({ status: "pending" });
 
     try {
-      const microAmount = BigInt(Math.round(Number(data.amount) * 1_000_000));
+      const parsedAmount = Number(data.amount);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        throw new Error("Invalid deposit amount");
+      }
+      const microAmount = BigInt(Math.round(parsedAmount * 1_000_000));
       const txOptions = buildDepositTx(
         {
           vaultId,
