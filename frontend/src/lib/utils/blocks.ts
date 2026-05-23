@@ -13,12 +13,20 @@ export function durationDaysToBlocks(days: number): number {
 }
 
 /**
- * Converts remaining blocks into a human-readable time remaining string.
- * If currentBlock >= endBlock, the vault has matured and is ready to withdraw.
+ * Converts remaining Stacks/Bitcoin blocks into a human-readable time remaining string.
+ * Uses a standard assumption of 10 minutes per block (approx 144 blocks per day).
  *
- * @param currentBlock - The current Stacks block height
- * @param endBlock - The vault's maturity block height
- * @returns A human-readable string like '14 days, 3 hours' or 'Ready to withdraw'
+ * Examples:
+ * - 0 blocks -> "Ready to withdraw"
+ * - 1 block -> "10 minutes"
+ * - 6 blocks -> "1 hour"
+ * - 144 blocks -> "1 day"
+ * - 2034 blocks -> "14 days, 3 hours"
+ * - NaN inputs -> "Ready to withdraw"
+ *
+ * @param currentBlock - The current Stacks block height (number)
+ * @param endBlock - The vault's end/maturity Stacks block height (number)
+ * @returns A human-readable remaining time string or 'Ready to withdraw'
  */
 export function blocksToTimeRemaining(currentBlock: number, endBlock: number): string {
   if (isNaN(currentBlock) || isNaN(endBlock)) {
