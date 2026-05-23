@@ -154,5 +154,8 @@ describe("DashboardPage Empty State", () => {
       )
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Create Your First Vault" })).toBeInTheDocument();
+
+    // Assert block badge
+    expect(screen.getByText("Block #100")).toBeInTheDocument();
   });
 });
