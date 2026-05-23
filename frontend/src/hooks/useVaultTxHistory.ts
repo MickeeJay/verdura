@@ -74,7 +74,7 @@ async function fetchContractTransactions(
 export function useVaultTxHistory(vaultId: number, initialLimit = 50) {
   const { stacksNetwork } = useWallet();
   const { savingsVault } = getContractAddresses(stacksNetwork);
-  const [offset, setOffset] = useState(0);
+  const offset = 0;
   const [limit, setLimit] = useState(initialLimit);
 
   const queryKey = ["vault-tx-history", savingsVault, vaultId, limit, offset] as const;

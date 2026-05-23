@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useWallet } from "@/hooks/useWallet";
 import { buildDepositTx } from "@/lib/contracts/savings-vault";
 import { openContractCall } from "@stacks/connect";
@@ -33,25 +31,6 @@ async function fetchStxBalance(address: string): Promise<bigint> {
   return BigInt(data.stx.balance);
 }
 
-const createDepositSchema = (maxBalance: bigint) =>
-  z.object({
-    amount: z
-      .string()
-      .min(1, { message: "Amount is required" })
-      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-        message: "Amount must be a positive number",
-      })
-      .refine(
-        (val) => {
-          const microVal = BigInt(Math.round(Number(val) * 1_000_000));
-          return microVal <= maxBalance;
-        },
-        {
-          message: "Amount exceeds available wallet balance",
-        }
-      ),
-  });
-
 type DepositInput = {
   amount: string;
 };
@@ -78,9 +57,9 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<DepositInput>({
-    resolver: zodResolver(createDepositSchema(balance)),
     defaultValues: {
       amount: "",
     },
@@ -88,18 +67,30 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
 
   const onSubmit = async (data: DepositInput) => {
     if (!address) return;
+
+    // Manual validation — always uses latest balance
+    const val = Number(data.amount);
+    if (!data.amount || data.amount.trim() === "") {
+      setError("amount", { message: "Amount is required" });
+      return;
+    }
+    if (isNaN(val) || val <= 0) {
+      setError("amount", { message: "Amount must be a positive number" });
+      return;
+    }
+    const microVal = BigInt(Math.round(val * 1_000_000));
+    if (microVal > balance) {
+      setError("amount", { message: "Amount exceeds available wallet balance" });
+      return;
+    }
+
     setTxState({ status: "pending" });
 
     try {
-      const parsedAmount = Number(data.amount);
-      if (isNaN(parsedAmount) || parsedAmount <= 0) {
-        throw new Error("Invalid deposit amount");
-      }
-      const microAmount = BigInt(Math.round(parsedAmount * 1_000_000));
       const txOptions = buildDepositTx(
         {
           vaultId,
-          amount: microAmount,
+          amount: microVal,
         },
         stacksNetwork
       );

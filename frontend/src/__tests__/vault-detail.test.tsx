@@ -4,7 +4,7 @@ import { WithdrawButton } from "../components/vaults/WithdrawButton";
 import { DepositForm } from "../components/vaults/DepositForm";
 import { TxHistoryList } from "../components/txs/TxHistoryList";
 import VaultDetailPage from "../app/(app)/vaults/[vaultId]/page";
-import { WalletContext } from "../contexts/WalletContext";
+import { WalletContext, type WalletContextType } from "../contexts/WalletContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { openContractCall } from "@stacks/connect";
 import { STACKS_TESTNET } from "@stacks/network";
@@ -21,6 +21,9 @@ jest.mock("@stacks/connect", () => {
     openContractCall: jest.fn(),
   };
 });
+
+// Mock canvas-confetti
+jest.mock("canvas-confetti", () => jest.fn());
 
 // Mock hooks
 jest.mock("../hooks/useWallet", () => ({
@@ -45,7 +48,7 @@ jest.mock("../lib/contracts/savings-vault", () => {
 });
 
 // Helper wrapper for react-query provider
-const renderWithProviders = (ui: React.ReactElement, contextValue?: any) => {
+const renderWithProviders = (ui: React.ReactElement, contextValue?: WalletContextType) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -181,6 +184,7 @@ describe("Vault Detail Page Components", () => {
       fireEvent.change(input, { target: { value: "-5" } });
 
       const submitBtn = screen.getByRole("button", { name: /deposit savings/i });
+      await waitFor(() => expect(submitBtn).toBeEnabled());
       fireEvent.click(submitBtn);
 
       expect(await screen.findByRole("alert")).toHaveTextContent("Amount must be a positive number");
@@ -194,6 +198,7 @@ describe("Vault Detail Page Components", () => {
       fireEvent.change(input, { target: { value: "150" } });
 
       const submitBtn = screen.getByRole("button", { name: /deposit savings/i });
+      await waitFor(() => expect(submitBtn).toBeEnabled());
       fireEvent.click(submitBtn);
 
       expect(await screen.findByRole("alert")).toHaveTextContent("Amount exceeds available wallet balance");
@@ -206,6 +211,7 @@ describe("Vault Detail Page Components", () => {
       fireEvent.change(input, { target: { value: "abc" } });
 
       const submitBtn = screen.getByRole("button", { name: /deposit savings/i });
+      await waitFor(() => expect(submitBtn).toBeEnabled());
       fireEvent.click(submitBtn);
 
       expect(await screen.findByRole("alert")).toHaveTextContent("Amount must be a positive number");
