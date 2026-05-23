@@ -83,6 +83,12 @@ export function WithdrawButton({
     }
   };
 
+  const preloadConfetti = () => {
+    import("canvas-confetti").catch((err) => {
+      console.warn("Failed to pre-load canvas-confetti:", err);
+    });
+  };
+
   if (!isActive) {
     return (
       <button
@@ -118,6 +124,7 @@ export function WithdrawButton({
         ) : (
           <button
             onClick={handleWithdraw}
+            onMouseEnter={preloadConfetti}
             disabled={txState.status === "pending" || txState.status === "success"}
             data-testid="withdraw-button-enabled"
             className={`w-full flex items-center justify-center gap-2 h-11 px-6 font-semibold rounded-xl transition-all shadow-md active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed ${
