@@ -171,12 +171,14 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
 
         <button
           onClick={handleShare}
-          className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold border border-border rounded-lg bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
+          className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold border rounded-lg bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200 ${
+            copied ? "border-emerald-500/50 scale-105 shadow-sm shadow-emerald-500/10" : "border-border"
+          }`}
           data-testid="share-vault-button"
         >
           {copied ? (
             <>
-              <Check className="size-3.5 text-emerald-500 animate-bounce" />
+              <Check className="size-3.5 text-emerald-500" />
               <span>Copied Link!</span>
             </>
           ) : (
