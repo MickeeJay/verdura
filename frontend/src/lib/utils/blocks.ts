@@ -21,6 +21,10 @@ export function durationDaysToBlocks(days: number): number {
  * @returns A human-readable string like '14 days, 3 hours' or 'Ready to withdraw'
  */
 export function blocksToTimeRemaining(currentBlock: number, endBlock: number): string {
+  if (isNaN(currentBlock) || isNaN(endBlock)) {
+    return "Ready to withdraw";
+  }
+
   if (currentBlock >= endBlock) {
     return "Ready to withdraw";
   }
