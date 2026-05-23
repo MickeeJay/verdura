@@ -116,7 +116,7 @@ export function WithdrawButton({
             <div
               role="tooltip"
               data-testid="withdraw-tooltip"
-              className="pointer-events-none absolute bottom-full left-1/2 z-10 -translate-x-1/2 scale-0 group-hover:scale-100 rounded-lg bg-neutral-900 dark:bg-neutral-950 px-3 py-1.5 text-xs text-white font-medium shadow-md transition-all duration-150 mb-2 whitespace-nowrap"
+              className="vault-tooltip"
             >
               Vault matures in {timeRemaining}
             </div>

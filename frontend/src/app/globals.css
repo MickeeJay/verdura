@@ -276,4 +276,12 @@
   .skeleton--stat {
     @apply h-24 rounded-2xl;
   }
+
+  /* Premium Tooltip Styling */
+  .vault-tooltip {
+    @apply pointer-events-none absolute bottom-full left-1/2 z-10 -translate-x-1/2 scale-0 group-hover:scale-100 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition-all duration-200 ease-out mb-2 whitespace-nowrap border border-neutral-800;
+    background: oklch(0.145 0 0);
+    color: oklch(0.985 0 0);
+    box-shadow: 0 10px 30px oklch(0 0 0 / 30%);
+  }
 }
