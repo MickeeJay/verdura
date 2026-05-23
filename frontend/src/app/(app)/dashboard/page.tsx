@@ -16,27 +16,27 @@ import {
   CircleDollarSign,
   Briefcase,
   Lock,
-  Loader2,
 } from "lucide-react";
 
 export default function DashboardPage() {
   const { address } = useWallet();
   const queryClient = useQueryClient();
 
-  // Guard: Do not show wallet-specific data without address
-  if (!address) {
-    return null;
-  }
-
   const { data: vaults, isLoading: vaultsLoading, isRefetching: vaultsRefetching } = useVaults();
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: currentBlock, isLoading: blockLoading } = useCurrentBlock();
 
   const handleRefresh = async () => {
+    if (!address) return;
     // Call queryClient.invalidateQueries(['vaults', address])
     await queryClient.invalidateQueries({ queryKey: ["vaults", address] });
     await queryClient.invalidateQueries({ queryKey: ["profile", address] });
   };
+
+  // Guard: Do not show wallet-specific data without address
+  if (!address) {
+    return null;
+  }
 
   const isLoading = vaultsLoading || profileLoading || blockLoading;
 
@@ -162,7 +162,7 @@ export default function DashboardPage() {
             </div>
             <h3 className="empty-state__title">No Vaults Found</h3>
             <p className="empty-state__description">
-              You haven't created any savings vaults yet. Start locking your tokens to earn Stacks Bitcoin yield!
+              You haven&apos;t created any savings vaults yet. Start locking your tokens to earn Stacks Bitcoin yield!
             </p>
             <Link href="/vaults/create" className="empty-state__cta">
               Create Your First Vault
