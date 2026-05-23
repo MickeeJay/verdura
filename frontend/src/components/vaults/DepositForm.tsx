@@ -142,6 +142,10 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        {/* Accessible error summary */}
+        <div aria-live="polite" aria-atomic="true" className="sr-only">
+          {errors.amount && `Deposit error: ${errors.amount.message}`}
+        </div>
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between items-center text-xs">
             <label htmlFor="deposit-amount" className="font-semibold text-muted-foreground">
