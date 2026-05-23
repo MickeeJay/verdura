@@ -118,14 +118,23 @@ export function WithdrawButton({
         ) : (
           <button
             onClick={handleWithdraw}
-            disabled={txState.status === "pending"}
+            disabled={txState.status === "pending" || txState.status === "success"}
             data-testid="withdraw-button-enabled"
-            className="w-full flex items-center justify-center gap-2 h-11 px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-emerald-500/20 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full flex items-center justify-center gap-2 h-11 px-6 font-semibold rounded-xl transition-all shadow-md active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed ${
+              txState.status === "success"
+                ? "bg-neutral-100 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500 border border-border"
+                : "bg-emerald-500 hover:bg-emerald-600 text-white hover:shadow-emerald-500/20"
+            }`}
           >
             {txState.status === "pending" ? (
               <>
                 <Loader2 className="size-5 animate-spin" />
                 Withdrawing...
+              </>
+            ) : txState.status === "success" ? (
+              <>
+                <CheckCircle2 className="size-4 text-emerald-500" />
+                Withdrawn Successfully
               </>
             ) : (
               <>
