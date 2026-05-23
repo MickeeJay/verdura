@@ -39,6 +39,23 @@ const renderWithQueryClient = (ui: React.ReactElement) => {
   );
 };
 
+describe("DashboardPage Wallet Address Guard", () => {
+  it("renders null when address is not present", () => {
+    // Mock user being disconnected
+    (useWallet as jest.Mock).mockReturnValue({
+      address: null,
+      isConnected: false,
+      network: "testnet",
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+      stacksNetwork: {},
+    });
+
+    const { container } = renderWithQueryClient(<DashboardPage />);
+    expect(container.firstChild).toBeNull();
+  });
+});
+
 describe("VaultCard Component", () => {
   const mockVault = {
     id: 1,
