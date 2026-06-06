@@ -34,7 +34,18 @@ export function TxProvider({ children }: { children: React.ReactNode }) {
   const pendingCount = 0;
 
   const addPendingTx = useCallback((txId: string, label: string) => {
-    // Skeleton
+    setTransactions((prev) => {
+      if (prev.some((tx) => tx.txId === txId)) return prev;
+      return [
+        ...prev,
+        {
+          txId,
+          label,
+          status: "submitted",
+          addedAt: Date.now(),
+        },
+      ];
+    });
   }, []);
 
   const clearResolved = useCallback(() => {
