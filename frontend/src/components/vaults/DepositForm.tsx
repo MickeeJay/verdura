@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useWallet } from "@/hooks/useWallet";
+import { useTx } from "@/hooks/useTx";
 import { buildDepositTx } from "@/lib/contracts/savings-vault";
 import { openContractCall } from "@stacks/connect";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -43,6 +44,7 @@ type TxState =
 
 export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
   const { address, stacksNetwork } = useWallet();
+  const { addPendingTx } = useTx();
   const queryClient = useQueryClient();
   const [txState, setTxState] = useState<TxState>({ status: "idle" });
 
@@ -103,6 +105,7 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
         },
         onFinish: (result: { txId: string }) => {
           setTxState({ status: "success", txId: result.txId });
+          addPendingTx(result.txId, "Deposit STX");
           reset();
           refetchBalance();
           queryClient.invalidateQueries({ queryKey: ["vault", address, vaultId] });
