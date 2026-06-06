@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { HiroTxStatus, isTerminalStatus, isSuccessStatus } from "@/lib/types/hiro-types";
 import { useTxMonitor } from "@/hooks/useTxMonitor";
@@ -27,11 +27,9 @@ export const TxContext = createContext<TxContextType | undefined>(undefined);
 // Helper watcher component for tracking individual transactions
 function TxWatcherItem({
   txId,
-  label,
   onTransition,
 }: {
   txId: string;
-  label: string;
   onTransition: (txId: string, status: HiroTxStatus) => void;
 }) {
   const { txStatus } = useTxMonitor(txId);
@@ -144,7 +142,6 @@ export function TxProvider({ children }: { children: React.ReactNode }) {
         <TxWatcherItem
           key={tx.txId}
           txId={tx.txId}
-          label={tx.label}
           onTransition={handleTransition}
         />
       ))}

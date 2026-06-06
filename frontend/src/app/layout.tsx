@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { WalletProvider } from "@/contexts/WalletContext";
+import { Providers } from "@/components/Providers";
 import { TopBar } from "@/components/TopBar";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
@@ -34,12 +34,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
       >
-        <WalletProvider>
+        <Providers>
           <div className="flex flex-col min-h-screen">
             <TopBar />
             <main className="flex-1">{children}</main>
           </div>
-        </WalletProvider>
+        </Providers>
       </body>
     </html>
   );
