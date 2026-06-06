@@ -2,6 +2,8 @@
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { TxProvider } from "@/contexts/TxContext";
+import { Toaster } from "sonner";
 
 export default function AppLayout({
   children,
@@ -10,7 +12,10 @@ export default function AppLayout({
 }>) {
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <TxProvider>
+        {children}
+        <Toaster richColors position="bottom-right" />
+      </TxProvider>
     </QueryClientProvider>
   );
 }
