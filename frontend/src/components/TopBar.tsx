@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { WalletConnectButton } from "./wallet/WalletConnectButton";
 import { NetworkBadge } from "./wallet/NetworkBadge";
+import { TxStatusIndicator } from "./tx/TxStatusIndicator";
 
 export function TopBar() {
   return (
@@ -52,6 +53,7 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center gap-4">
+          <TxStatusIndicator />
           <NetworkBadge />
           <WalletConnectButton />
         </div>
