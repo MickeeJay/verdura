@@ -284,4 +284,18 @@
     color: oklch(0.985 0 0);
     box-shadow: 0 10px 30px oklch(0 0 0 / 30%);
   }
+
+  /* Tx indicator badge pulse */
+  .tx-badge-pulse {
+    animation: tx-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes tx-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(0.55 0.18 145 / 60%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px oklch(0.55 0.18 145 / 0%);
+  }
 }
