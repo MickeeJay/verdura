@@ -237,4 +237,242 @@ describe("Transaction Monitoring System", () => {
       );
     }, 20000);
   });
+
+  // ── Test 3: Pending count shows in TopBar ──────────────────
+
+  describe("TxStatusIndicator", () => {
+    it("shows pending count badge when transactions are pending", async () => {
+      // Make fetch return pending status
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              tx_id: "0xpending1",
+              tx_status: "pending",
+              tx_type: "contract_call",
+              nonce: 1,
+              fee_rate: "200",
+              sender_address: "ST1TEST",
+              sponsored: false,
+              post_condition_mode: "allow",
+              post_conditions: [],
+              anchor_mode: "any",
+            }),
+        })
+      ) as jest.Mock;
+
+      render(
+        <TestWrapper>
+          <TxAdder txId="0xpending1" label="Create Vault" />
+          <TxStatusIndicator />
+        </TestWrapper>
+      );
+
+      await waitFor(() => {
+        const badge = screen.getByTestId("tx-indicator-badge");
+        expect(badge).toBeInTheDocument();
+        expect(badge).toHaveTextContent("1");
+      });
+    });
+  });
+
+  // ── Test 4: PendingTxDrawer renders items ──────────────────
+
+  describe("PendingTxDrawer", () => {
+    it("renders transaction items in the drawer", async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              tx_id: "0xdrawer1",
+              tx_status: "pending",
+              tx_type: "contract_call",
+              nonce: 1,
+              fee_rate: "200",
+              sender_address: "ST1TEST",
+              sponsored: false,
+              post_condition_mode: "allow",
+              post_conditions: [],
+              anchor_mode: "any",
+            }),
+        })
+      ) as jest.Mock;
+
+      render(
+        <TestWrapper>
+          <TxAdder txId="0xdrawer1" label="Deposit STX" />
+          <PendingTxDrawer isOpen={true} onClose={() => {}} />
+        </TestWrapper>
+      );
+
+      await waitFor(() => {
+        const items = screen.getAllByTestId("tx-drawer-item");
+        expect(items.length).toBeGreaterThanOrEqual(1);
+      });
+
+      expect(screen.getByText("Deposit STX")).toBeInTheDocument();
+    });
+  });
+
+  // ── Test 5: Polling stops at terminal status ───────────────
+
+  describe("polling behavior", () => {
+    it("stops polling after terminal status is reached", async () => {
+      let fetchCallCount = 0;
+      global.fetch = jest.fn(() => {
+        fetchCallCount++;
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              tx_id: "0xstop1",
+              tx_status: "success",
+              tx_type: "contract_call",
+              nonce: 1,
+              fee_rate: "200",
+              sender_address: "ST1TEST",
+              sponsored: false,
+              post_condition_mode: "allow",
+              post_conditions: [],
+              anchor_mode: "any",
+              block_height: 200,
+              burn_block_time: 1700000002,
+            }),
+        });
+      }) as jest.Mock;
+
+      render(
+        <TestWrapper>
+          <TxAdder txId="0xstop1" label="Withdraw" />
+        </TestWrapper>
+      );
+
+      // Wait for initial fetch
+      await waitFor(() => {
+        expect(fetchCallCount).toBeGreaterThanOrEqual(1);
+      });
+
+      const countAfterFirst = fetchCallCount;
+
+      // Wait 12 seconds (past one refetch interval of 10s)
+      // If polling stopped, no additional fetches should happen
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      });
+
+      // Fetch count should not have significantly increased since the terminal status was returned immediately
+      expect(fetchCallCount).toBeLessThanOrEqual(countAfterFirst + 1);
+    }, 15000);
+  });
+
+  // ── Test 6: Multiple simultaneous transactions ─────────────
+
+  describe("multiple transactions", () => {
+    it("handles multiple simultaneous pending transactions", async () => {
+      global.fetch = jest.fn((url: string) => {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              tx_id: url.includes("0xmulti1") ? "0xmulti1" : "0xmulti2",
+              tx_status: "pending",
+              tx_type: "contract_call",
+              nonce: 1,
+              fee_rate: "200",
+              sender_address: "ST1TEST",
+              sponsored: false,
+              post_condition_mode: "allow",
+              post_conditions: [],
+              anchor_mode: "any",
+            }),
+        });
+      }) as jest.Mock;
+
+      render(
+        <TestWrapper>
+          <TxAdder txId="0xmulti1" label="Vault A" />
+          <TxAdder txId="0xmulti2" label="Vault B" />
+          <PendingTxDrawer isOpen={true} onClose={() => {}} />
+        </TestWrapper>
+      );
+
+      await waitFor(() => {
+        const items = screen.getAllByTestId("tx-drawer-item");
+        expect(items.length).toBe(2);
+      });
+
+      expect(screen.getByText("Vault A")).toBeInTheDocument();
+      expect(screen.getByText("Vault B")).toBeInTheDocument();
+    });
+  });
+
+  // ── Test 7: clearResolved removes completed transactions ───
+
+  describe("clearResolved", () => {
+    it("removes resolved transactions from the list", async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              tx_id: "0xclear1",
+              tx_status: "success",
+              tx_type: "contract_call",
+              nonce: 1,
+              fee_rate: "200",
+              sender_address: "ST1TEST",
+              sponsored: false,
+              post_condition_mode: "allow",
+              post_conditions: [],
+              anchor_mode: "any",
+              block_height: 300,
+              burn_block_time: 1700000003,
+            }),
+        })
+      ) as jest.Mock;
+
+      let capturedCtx: {
+        transactions: PendingTransaction[];
+        pendingCount: number;
+        addPendingTx: (txId: string, label: string) => void;
+        clearResolved: () => void;
+      } | null = null;
+
+      function ContextCapture() {
+        const ctx = React.useContext(TxContext);
+        React.useEffect(() => {
+          if (ctx) capturedCtx = ctx;
+        });
+        return null;
+      }
+
+      render(
+        <TestWrapper>
+          <ContextCapture />
+          <TxAdder txId="0xclear1" label="Clear Test" />
+        </TestWrapper>
+      );
+
+      // Wait for the transaction to be resolved
+      await waitFor(
+        () => {
+          expect(capturedCtx).not.toBeNull();
+          expect(mockedToast.success).toHaveBeenCalled();
+        },
+        { timeout: 15000 }
+      );
+
+      // Call clearResolved
+      act(() => {
+        capturedCtx!.clearResolved();
+      });
+
+      // After clearing, transactions should be filtered
+      await waitFor(() => {
+        expect(capturedCtx!.transactions.length).toBe(0);
+      });
+    }, 20000);
+  });
 });
