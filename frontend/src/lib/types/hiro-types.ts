@@ -18,6 +18,25 @@ export type HiroTxStatus =
   | "dropped_too_expensive"
   | "dropped_stale_garbage_collect";
 
+/** Terminal statuses — polling should stop once one of these is reached. */
+const TERMINAL_STATUSES: ReadonlySet<HiroTxStatus> = new Set<HiroTxStatus>([
+  "success",
+  "abort_by_response",
+  "abort_by_post_condition",
+  "dropped_replace_by_fee",
+  "dropped_replace_across_fork",
+  "dropped_too_expensive",
+  "dropped_stale_garbage_collect",
+]);
+
+/**
+ * Returns `true` when the transaction has reached a terminal state
+ * (success OR any abort/drop variant). Polling should stop.
+ */
+export function isTerminalStatus(status: HiroTxStatus): boolean {
+  return TERMINAL_STATUSES.has(status);
+}
+
 
 // ── Contract Call Details ────────────────────────────────────
 
