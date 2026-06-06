@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useState, useCallback, useContext } from "react";
-import { HiroTxStatus } from "@/lib/types/hiro-types";
+import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
+import { HiroTxStatus, isTerminalStatus } from "@/lib/types/hiro-types";
+import { useTxMonitor } from "@/hooks/useTxMonitor";
 
 export interface PendingTransaction {
   txId: string;
@@ -28,10 +29,34 @@ export function useTx(): TxContextType {
   return context;
 }
 
+// Helper watcher component for tracking individual transactions
+function TxWatcherItem({
+  txId,
+  label,
+  onTransition,
+}: {
+  txId: string;
+  label: string;
+  onTransition: (txId: string, status: HiroTxStatus) => void;
+}) {
+  const { txStatus } = useTxMonitor(txId);
+
+  useEffect(() => {
+    if (txStatus) {
+      onTransition(txId, txStatus);
+    }
+  }, [txStatus, txId, onTransition]);
+
+  return null;
+}
+
 export function TxProvider({ children }: { children: React.ReactNode }) {
   const [transactions, setTransactions] = useState<PendingTransaction[]>([]);
 
-  const pendingCount = 0;
+  // Calculate pending count (any tx not in terminal status)
+  const pendingCount = transactions.filter(
+    (tx) => tx.status === "submitted" || !isTerminalStatus(tx.status)
+  ).length;
 
   const addPendingTx = useCallback((txId: string, label: string) => {
     setTransactions((prev) => {
@@ -48,13 +73,31 @@ export function TxProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const handleTransition = useCallback((txId: string, status: HiroTxStatus) => {
+    // Skeleton for now, to be filled in toast commits
+  }, []);
+
   const clearResolved = useCallback(() => {
     // Skeleton
   }, []);
 
+  // Filter down to only transactions that need active polling
+  const activeTxs = transactions.filter(
+    (tx) => tx.status === "submitted" || !isTerminalStatus(tx.status)
+  );
+
   return (
     <TxContext.Provider value={{ transactions, pendingCount, addPendingTx, clearResolved }}>
       {children}
+      {/* Mount a watcher for each active transaction */}
+      {activeTxs.map((tx) => (
+        <TxWatcherItem
+          key={tx.txId}
+          txId={tx.txId}
+          label={tx.label}
+          onTransition={handleTransition}
+        />
+      ))}
     </TxContext.Provider>
   );
 }
