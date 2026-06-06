@@ -118,7 +118,23 @@ export function TxProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearResolved = useCallback(() => {
-    // Skeleton
+    setTransactions((prev) =>
+      prev.filter((tx) => tx.status === "submitted" || !isTerminalStatus(tx.status))
+    );
+  }, []);
+
+  // Auto-cleanup resolved transactions after 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTransactions((prev) =>
+        prev.filter((tx) => {
+          if (!tx.resolvedAt) return true;
+          return Date.now() - tx.resolvedAt < 5 * 60 * 1000;
+        })
+      );
+    }, 30_000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Filter down to only transactions that need active polling
