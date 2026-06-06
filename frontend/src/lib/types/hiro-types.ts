@@ -37,6 +37,13 @@ export function isTerminalStatus(status: HiroTxStatus): boolean {
   return TERMINAL_STATUSES.has(status);
 }
 
+/**
+ * Returns `true` only when the transaction was confirmed successfully.
+ */
+export function isSuccessStatus(status: HiroTxStatus): boolean {
+  return status === "success";
+}
+
 
 // ── Contract Call Details ────────────────────────────────────
 
