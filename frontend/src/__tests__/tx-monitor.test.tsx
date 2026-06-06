@@ -181,5 +181,60 @@ describe("Transaction Monitoring System", () => {
         { timeout: 15000 }
       );
     }, 20000);
+
+    // ── Test 2: Toast called on failure status ────────────────
+
+    it("calls toast.error when transaction reaches abort status", async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              tx_id: "0xfail456",
+              tx_status: "abort_by_response",
+              tx_type: "contract_call",
+              nonce: 1,
+              fee_rate: "200",
+              sender_address: "ST1TEST",
+              sponsored: false,
+              post_condition_mode: "allow",
+              post_conditions: [],
+              anchor_mode: "any",
+              block_height: 101,
+              burn_block_time: 1700000001,
+            }),
+        })
+      ) as jest.Mock;
+
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: false,
+            gcTime: 0,
+          },
+        },
+      });
+
+      render(
+        <QueryClientProvider client={queryClient}>
+          <TxProvider>
+            <TxAdder txId="0xfail456" label="Deposit STX" />
+          </TxProvider>
+        </QueryClientProvider>
+      );
+
+      await waitFor(
+        () => {
+          expect(mockedToast.error).toHaveBeenCalledWith(
+            "Deposit STX failed",
+            expect.objectContaining({
+              id: "0xfail456",
+              description: "Transaction aborted or dropped",
+            })
+          );
+        },
+        { timeout: 15000 }
+      );
+    }, 20000);
   });
 });
