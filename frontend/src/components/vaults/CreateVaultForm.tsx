@@ -9,6 +9,7 @@ import { fetchSimulatedYield } from "@/lib/contracts/yield-router";
 import { buildCreateVaultTx } from "@/lib/contracts/savings-vault";
 import { openContractCall } from "@stacks/connect";
 import { useWallet } from "@/hooks/useWallet";
+import { useTx } from "@/hooks/useTx";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { DurationSlider } from "./DurationSlider";
 import { YieldToggle } from "./YieldToggle";
@@ -21,6 +22,7 @@ type TxState =
 
 export function CreateVaultForm() {
   const { stacksNetwork } = useWallet();
+  const { addPendingTx } = useTx();
   const {
     register,
     handleSubmit,
@@ -91,6 +93,7 @@ export function CreateVaultForm() {
         },
         onFinish: (result: { txId: string }) => {
           setTxState({ status: "success", txId: result.txId });
+          addPendingTx(result.txId, "Create Vault");
         },
         onCancel: () => {
           setTxState({ status: "idle" });
