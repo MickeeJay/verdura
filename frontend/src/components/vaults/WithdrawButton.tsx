@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useWallet } from "@/hooks/useWallet";
+import { useTx } from "@/hooks/useTx";
 import { buildWithdrawTx } from "@/lib/contracts/savings-vault";
 import { openContractCall } from "@stacks/connect";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,6 +33,7 @@ export function WithdrawButton({
   onSuccess,
 }: WithdrawButtonProps) {
   const { address, stacksNetwork } = useWallet();
+  const { addPendingTx } = useTx();
   const queryClient = useQueryClient();
   const [txState, setTxState] = useState<TxState>({ status: "idle" });
 
@@ -52,6 +54,7 @@ export function WithdrawButton({
         },
         onFinish: async (result: { txId: string }) => {
           setTxState({ status: "success", txId: result.txId });
+          addPendingTx(result.txId, "Withdraw Principal & Yield");
           
           // Trigger confetti dynamically
           try {
