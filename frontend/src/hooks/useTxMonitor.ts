@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { HiroTransactionResponse, HiroTxStatus } from "@/lib/types/hiro-types";
 
+import { isTerminalStatus } from "@/lib/types/hiro-types";
+
 const HIRO_API_URL = process.env.NEXT_PUBLIC_HIRO_API_URL ?? "https://api.testnet.hiro.so";
 
 async function fetchTransaction(txId: string): Promise<HiroTransactionResponse> {
@@ -24,12 +26,21 @@ export function useTxMonitor(txId: string | null) {
       return fetchTransaction(txId);
     },
     enabled: !!txId,
+    refetchInterval: (query) => {
+      const state = query.state.data;
+      if (state && isTerminalStatus(state.tx_status)) {
+        return false;
+      }
+      return 10_000;
+    },
   });
 
   const txStatus: HiroTxStatus | null = query.data?.tx_status ?? null;
+  const isTerminal = txStatus ? isTerminalStatus(txStatus) : false;
 
   return {
     ...query,
     txStatus,
+    isTerminal,
   };
 }
