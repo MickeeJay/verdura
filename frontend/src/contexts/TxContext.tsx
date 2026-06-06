@@ -91,11 +91,18 @@ export function TxProvider({ children }: { children: React.ReactNode }) {
 
       const isTerminal = isTerminalStatus(status);
 
-      if (isTerminal && isSuccessStatus(status)) {
-        toast.success(`${tx.label}!`, {
-          id: txId,
-          description: "Confirmed on Stacks",
-        });
+      if (isTerminal) {
+        if (isSuccessStatus(status)) {
+          toast.success(`${tx.label}!`, {
+            id: txId,
+            description: "Confirmed on Stacks",
+          });
+        } else {
+          toast.error(`${tx.label} failed`, {
+            id: txId,
+            description: "Transaction aborted or dropped",
+          });
+        }
       }
 
       return prev.map((t) =>
