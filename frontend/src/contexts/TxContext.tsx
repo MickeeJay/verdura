@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
-import { HiroTxStatus, isTerminalStatus } from "@/lib/types/hiro-types";
+import { toast } from "sonner";
+import { HiroTxStatus, isTerminalStatus, isSuccessStatus } from "@/lib/types/hiro-types";
 import { useTxMonitor } from "@/hooks/useTxMonitor";
 
 export interface PendingTransaction {
@@ -61,6 +62,13 @@ export function TxProvider({ children }: { children: React.ReactNode }) {
   const addPendingTx = useCallback((txId: string, label: string) => {
     setTransactions((prev) => {
       if (prev.some((tx) => tx.txId === txId)) return prev;
+
+      // Show initial loading toast
+      toast.loading(`${label}...`, {
+        id: txId,
+        description: "Transaction submitted to Stacks",
+      });
+
       return [
         ...prev,
         {
@@ -74,7 +82,32 @@ export function TxProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleTransition = useCallback((txId: string, status: HiroTxStatus) => {
-    // Skeleton for now, to be filled in toast commits
+    setTransactions((prev) => {
+      const tx = prev.find((t) => t.txId === txId);
+      if (!tx) return prev;
+
+      // Only update if status actually changed
+      if (tx.status === status) return prev;
+
+      const isTerminal = isTerminalStatus(status);
+
+      if (isTerminal && isSuccessStatus(status)) {
+        toast.success(`${tx.label}!`, {
+          id: txId,
+          description: "Confirmed on Stacks",
+        });
+      }
+
+      return prev.map((t) =>
+        t.txId === txId
+          ? {
+              ...t,
+              status,
+              resolvedAt: isTerminal ? Date.now() : t.resolvedAt,
+            }
+          : t
+      );
+    });
   }, []);
 
   const clearResolved = useCallback(() => {
