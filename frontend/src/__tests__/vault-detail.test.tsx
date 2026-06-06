@@ -47,6 +47,13 @@ jest.mock("../lib/contracts/savings-vault", () => {
   };
 });
 
+// Mock useTx hook
+jest.mock("../hooks/useTx", () => ({
+  useTx: () => ({
+    addPendingTx: jest.fn(),
+  }),
+}));
+
 // Helper wrapper for react-query provider
 const renderWithProviders = (ui: React.ReactElement, contextValue?: WalletContextType) => {
   const queryClient = new QueryClient({

@@ -20,6 +20,13 @@ jest.mock("../lib/contracts/yield-router", () => ({
   fetchSimulatedYield: jest.fn(),
 }));
 
+// Mock useTx hook
+jest.mock("../hooks/useTx", () => ({
+  useTx: () => ({
+    addPendingTx: jest.fn(),
+  }),
+}));
+
 describe("CreateVaultForm", () => {
   const mockStacksNetwork = STACKS_TESTNET;
   const mockContextValue = {
