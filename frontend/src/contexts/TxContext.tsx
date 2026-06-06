@@ -22,13 +22,7 @@ interface TxContextType {
 
 export const TxContext = createContext<TxContextType | undefined>(undefined);
 
-export function useTx(): TxContextType {
-  const context = useContext(TxContext);
-  if (!context) {
-    throw new Error("useTx must be used within a TxProvider");
-  }
-  return context;
-}
+
 
 // Helper watcher component for tracking individual transactions
 function TxWatcherItem({
