@@ -34,3 +34,10 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Marketing Page Design & Target Demographics
+
+Verdura's marketing page is specifically targeted towards Nigerian and African users seeking financial stability.
+- **Aesthetic**: Premium, sleek, dynamic dark-mode elements with oklch-green accents symbolizing growth, security, and wealth.
+- **Value Proposition**: "Save in Dollars, Earn in Bitcoin" - hedging local fiat inflation (e.g. NGN) via USD-equivalent savings value, while accumulating yield paid out in Bitcoin.
+- **CTA**: Connect Stacks wallets (Leather, Xverse) to immediately create savings vaults.
