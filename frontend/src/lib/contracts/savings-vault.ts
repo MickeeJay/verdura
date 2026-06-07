@@ -195,8 +195,25 @@ export async function fetchIsVaultMature(
   }
 }
 
+export async function fetchVaultCount(
+  network: StacksNetwork
+): Promise<number> {
+  const { savingsVault } = getContractAddresses(network);
+  const [contractAddress, contractName] = savingsVault.split(".");
 
+  try {
+    const result = await callReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: "get-vault-count",
+      functionArgs: [],
+      senderAddress: contractAddress,
+      network,
+    });
 
-
-
-
+    return Number(cvToValue(result));
+  } catch (error) {
+    console.error("Error fetching vault count:", error);
+    return 0;
+  }
+}
