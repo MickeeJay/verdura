@@ -219,10 +219,48 @@ export default function MarketingPage() {
           </div>
           
           <Accordion type="single" collapsible className="w-full space-y-4">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>What is Verdura?</AccordionTrigger>
-              <AccordionContent>
-                Verdura is a decentralized savings protocol.
+            <AccordionItem value="item-1" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+                What is Verdura and how does it work?
+              </AccordionTrigger>
+              <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
+                Verdura is a decentralized savings protocol built on Stacks that allows you to lock USD-denominated value into savings vaults. While locked, your capital generates yields powered by Stacks (STX) stacking and decentralized finance strategies, which are paid directly to your wallet in Bitcoin.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+                How does Verdura protect my savings from inflation?
+              </AccordionTrigger>
+              <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
+                Traditional fiat savings lose significant value due to currency devaluation and high inflation. Verdura helps you hedge against this inflation by securing your capital in stable, USD-pegged digital assets, ensuring that your savings retain their purchasing power.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+                How is the Bitcoin yield generated and when is it paid?
+              </AccordionTrigger>
+              <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
+                Your savings are routed through secure, non-custodial smart contracts on the Stacks blockchain. These contracts leverage Stacks' consensus mechanism (Proof of Transfer) to stack STX and interact with audited DeFi protocols. The yield generated is paid directly to your connected wallet in Bitcoin.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+                Is Verdura safe and non-custodial?
+              </AccordionTrigger>
+              <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
+                Yes, absolutely. Verdura is completely non-custodial and trustless. We never take custody of your private keys or funds. Your savings are locked in open-source, audited smart contracts on Stacks, and only you hold the keys to withdraw them once the lock period expires.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-5" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+                What wallets can I use and how do I get started?
+              </AccordionTrigger>
+              <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
+                To get started, you will need a Stacks-compatible wallet like Leather or Xverse. Once you install the wallet extension or mobile app, fund it with STX or supported stable tokens, connect it to Verdura, and select your savings duration to establish your first vault.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
