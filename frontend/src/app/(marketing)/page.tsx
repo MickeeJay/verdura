@@ -59,9 +59,63 @@ export default function MarketingPage() {
 
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 px-4 bg-slate-900/50">
+      <section id="how-it-works" className="py-24 px-4 md:px-8 bg-slate-900/30 border-b border-slate-900/60">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold text-center text-slate-100">How It Works</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              How It Works
+            </h2>
+            <p className="text-slate-400 max-w-xl mx-auto">
+              Start securing your financial future in three simple, decentralized steps.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Step 1 */}
+            <div className="relative flex flex-col p-6 rounded-2xl bg-slate-900/50 border border-slate-800">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-emerald-500 font-bold text-lg">01</div>
+                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
+                  {/* Icon placeholder */}
+                  <span>Wallet</span>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Connect Wallet</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Connect your Stacks-compatible Web3 wallet (such as Leather or Xverse) securely in a single click. No passwords or sign-up forms are ever required.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative flex flex-col p-6 rounded-2xl bg-slate-900/50 border border-slate-800">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-emerald-500 font-bold text-lg">02</div>
+                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
+                  {/* Icon placeholder */}
+                  <span>Vault</span>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Create a Savings Vault</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Establish a commitment-based vault by selecting your duration and locking in stable savings. Your funds remain secured directly on the blockchain.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative flex flex-col p-6 rounded-2xl bg-slate-900/50 border border-slate-800">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-emerald-500 font-bold text-lg">03</div>
+                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
+                  {/* Icon placeholder */}
+                  <span>Yield</span>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Earn BTC Yield</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                While locked, your vault automatically routes to secure yield strategies. You collect passive returns denominated entirely in Bitcoin.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
