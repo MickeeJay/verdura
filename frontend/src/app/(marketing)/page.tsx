@@ -146,9 +146,54 @@ export default function MarketingPage() {
       </section>
 
       {/* Why Verdura Section */}
-      <section id="why-verdura" className="py-20 px-4">
+      <section id="why-verdura" className="py-24 px-4 md:px-8 border-b border-slate-900/60">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold text-center text-slate-100">Why Verdura</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Why Verdura?
+            </h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              See how Verdura compares to traditional savings platforms like Piggyvest and Nigerian bank accounts.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {comparisonPoints.map((point) => {
+              const Icon = point.icon;
+              return (
+                <div
+                  key={point.category}
+                  className="rounded-2xl border border-slate-800/80 bg-slate-900/30 p-6 md:p-8 transition-all duration-300 hover:border-emerald-500/20 group"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">{point.category}</h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Traditional */}
+                    <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
+                      <div className="text-xs font-semibold text-red-400/80 uppercase tracking-wider mb-2">Traditional</div>
+                      <div className="text-sm font-semibold text-slate-300 mb-1">{point.traditional.label}</div>
+                      <p className="text-xs text-slate-500 leading-relaxed">{point.traditional.detail}</p>
+                    </div>
+
+                    {/* Verdura */}
+                    <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-4">
+                      <div className="flex items-center gap-1 mb-2">
+                        <CheckCircle className="h-3 w-3 text-emerald-400" />
+                        <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Verdura</div>
+                      </div>
+                      <div className="text-sm font-semibold text-white mb-1">{point.verdura.label}</div>
+                      <p className="text-xs text-slate-400 leading-relaxed">{point.verdura.detail}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
