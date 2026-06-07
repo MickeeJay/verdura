@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "next/navigation";
+import { LiveStatsBar } from "@/components/LiveStatsBar";
 
 export default function MarketingPage() {
   const { connect, isConnected } = useWallet();
@@ -20,8 +21,8 @@ export default function MarketingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100">
       {/* Hero Section */}
-      <section id="hero" className="relative overflow-hidden pt-24 pb-16 px-4 md:px-8 border-b border-slate-900/60 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.08),transparent_50%)]">
-        <div className="container mx-auto max-w-5xl text-center flex flex-col items-center">
+      <section id="hero" className="relative overflow-hidden pt-24 pb-0 border-b border-slate-900/60 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.08),transparent_50%)]">
+        <div className="container mx-auto max-w-5xl text-center flex flex-col items-center px-4 md:px-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-xs font-semibold text-emerald-400 mb-6 tracking-wide uppercase">
             ⚡ Stacks Blockchain Powered
           </div>
@@ -50,6 +51,9 @@ export default function MarketingPage() {
               Learn More
             </Button>
           </div>
+        </div>
+        <div className="mt-8">
+          <LiveStatsBar />
         </div>
       </section>
 
