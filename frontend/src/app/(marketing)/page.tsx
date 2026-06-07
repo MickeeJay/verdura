@@ -146,7 +146,7 @@ export default function MarketingPage() {
       </section>
 
       {/* Why Verdura Section */}
-      <section id="why-verdura" className="py-24 px-4 md:px-8 border-b border-slate-900/60">
+      <section id="why-verdura" className="relative py-24 px-4 md:px-8 border-b border-slate-900/60 bg-[radial-gradient(ellipse_at_bottom,rgba(16,185,129,0.04),transparent_50%)]">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
@@ -163,31 +163,34 @@ export default function MarketingPage() {
               return (
                 <div
                   key={point.category}
-                  className="rounded-2xl border border-slate-800/80 bg-slate-900/30 p-6 md:p-8 transition-all duration-300 hover:border-emerald-500/20 group"
+                  className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/30 p-6 md:p-8 transition-all duration-300 hover:border-emerald-500/30 group hover:shadow-[0_8px_30px_rgba(16,185,129,0.05)]"
                 >
+                  {/* Subtle top border gradient */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 group-hover:scale-110 transition-all duration-300">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="text-lg font-bold text-white">{point.category}</h3>
+                    <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">{point.category}</h3>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     {/* Traditional */}
-                    <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-4">
-                      <div className="text-xs font-semibold text-red-400/80 uppercase tracking-wider mb-2">Traditional</div>
-                      <div className="text-sm font-semibold text-slate-300 mb-1">{point.traditional.label}</div>
+                    <div className="rounded-xl bg-slate-800/20 border border-slate-800/60 p-4 transition-all duration-300 group-hover:border-slate-800">
+                      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Traditional</div>
+                      <div className="text-sm font-semibold text-slate-400 mb-1">{point.traditional.label}</div>
                       <p className="text-xs text-slate-500 leading-relaxed">{point.traditional.detail}</p>
                     </div>
 
                     {/* Verdura */}
-                    <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-4">
+                    <div className="rounded-xl bg-gradient-to-b from-emerald-500/[0.03] to-emerald-500/[0.01] border border-emerald-500/10 p-4 transition-all duration-300 group-hover:border-emerald-500/20 group-hover:from-emerald-500/[0.06] group-hover:to-emerald-500/[0.02]">
                       <div className="flex items-center gap-1 mb-2">
                         <CheckCircle className="h-3 w-3 text-emerald-400" />
-                        <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Verdura</div>
+                        <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Verdura</div>
                       </div>
                       <div className="text-sm font-semibold text-white mb-1">{point.verdura.label}</div>
-                      <p className="text-xs text-slate-400 leading-relaxed">{point.verdura.detail}</p>
+                      <p className="text-xs text-slate-300 leading-relaxed">{point.verdura.detail}</p>
                     </div>
                   </div>
                 </div>
