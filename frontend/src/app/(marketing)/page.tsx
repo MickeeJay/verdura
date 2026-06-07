@@ -6,6 +6,12 @@ import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "next/navigation";
 import { LiveStatsBar } from "@/components/LiveStatsBar";
 import { Wallet, Lock, Coins, Shield, CheckCircle, Link2 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 
 export default function MarketingPage() {
@@ -201,9 +207,25 @@ export default function MarketingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 px-4 bg-slate-900/50">
-        <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl font-bold text-center text-slate-100">Frequently Asked Questions</h2>
+      <section id="faq" className="py-24 px-4 md:px-8 bg-slate-900/30 border-b border-slate-900/60">
+        <div className="container mx-auto max-w-3xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-slate-400">
+              Got questions? We've got answers.
+            </p>
+          </div>
+          
+          <Accordion type="single" collapsible className="w-full space-y-4">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>What is Verdura?</AccordionTrigger>
+              <AccordionContent>
+                Verdura is a decentralized savings protocol.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </section>
 
