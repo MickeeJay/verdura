@@ -2,8 +2,21 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useWallet } from "@/hooks/useWallet";
+import { useRouter } from "next/navigation";
 
 export default function MarketingPage() {
+  const { connect, isConnected } = useWallet();
+  const router = useRouter();
+
+  const handleStartSaving = () => {
+    if (isConnected) {
+      router.push("/dashboard");
+    } else {
+      connect();
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100">
       {/* Hero Section */}
@@ -23,6 +36,7 @@ export default function MarketingPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-12">
             <Button
+              onClick={handleStartSaving}
               size="lg"
               className="w-full sm:w-auto h-12 px-8 font-semibold rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.4)] transition-all duration-200"
             >
