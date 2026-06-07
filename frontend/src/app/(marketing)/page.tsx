@@ -269,16 +269,19 @@ export default function MarketingPage() {
       </section>
 
       {/* Footer Section */}
-      <footer className="py-16 border-t border-slate-900 bg-slate-950 text-slate-400">
-        <div className="container mx-auto max-w-6xl px-4 md:px-8">
+      <footer className="py-16 border-t border-slate-900 bg-slate-950 text-slate-400 relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+        
+        <div className="container mx-auto max-w-6xl px-4 md:px-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             {/* Col 1: Brand */}
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center font-bold text-slate-950">
+              <div className="flex items-center gap-2 group cursor-pointer w-fit">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center font-bold text-slate-950 transition-transform duration-300 group-hover:rotate-12">
                   V
                 </div>
-                <span className="text-lg font-bold text-white tracking-wide">Verdura</span>
+                <span className="text-lg font-bold text-white tracking-wide group-hover:text-emerald-400 transition-colors">Verdura</span>
               </div>
               <p className="text-sm text-slate-500 leading-relaxed">
                 Securing your wealth in stable USD savings vaults while generating Bitcoin yield on the Stacks blockchain.
@@ -294,18 +297,18 @@ export default function MarketingPage() {
                     href="https://explorer.hiro.so/?chain=mainnet"
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-emerald-400 transition-colors"
+                    className="hover:text-emerald-400 transition-colors duration-200"
                   >
                     Stacks Explorer
                   </a>
                 </li>
                 <li>
-                  <a href="#hero" className="hover:text-emerald-400 transition-colors">
+                  <a href="#hero" className="hover:text-emerald-400 transition-colors duration-200">
                     Savings Vaults
                   </a>
                 </li>
                 <li>
-                  <a href="#how-it-works" className="hover:text-emerald-400 transition-colors">
+                  <a href="#how-it-works" className="hover:text-emerald-400 transition-colors duration-200">
                     Yield Strategy
                   </a>
                 </li>
@@ -317,17 +320,17 @@ export default function MarketingPage() {
               <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Resources</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="/privacy" className="hover:text-emerald-400 transition-colors">
+                  <Link href="/privacy" className="hover:text-emerald-400 transition-colors duration-200">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="hover:text-emerald-400 transition-colors">
+                  <Link href="/terms" className="hover:text-emerald-400 transition-colors duration-200">
                     Terms of Use
                   </Link>
                 </li>
                 <li>
-                  <a href="#faq" className="hover:text-emerald-400 transition-colors">
+                  <a href="#faq" className="hover:text-emerald-400 transition-colors duration-200">
                     FAQ
                   </a>
                 </li>
@@ -342,7 +345,7 @@ export default function MarketingPage() {
                   href="https://twitter.com/verdura"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-emerald-500/30 transition-all"
+                  className="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white hover:border-emerald-500/30 hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)] hover:-translate-y-1 transition-all duration-300"
                   aria-label="Twitter / X"
                 >
                   <Twitter className="h-5 w-5" />
@@ -351,7 +354,7 @@ export default function MarketingPage() {
                   href="https://github.com/MickeeJay/verdura"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-emerald-500/30 transition-all"
+                  className="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white hover:border-emerald-500/30 hover:shadow-[0_4px_12px_rgba(16,185,129,0.1)] hover:-translate-y-1 transition-all duration-300"
                   aria-label="GitHub"
                 >
                   <Github className="h-5 w-5" />
