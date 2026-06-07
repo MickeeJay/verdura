@@ -215,7 +215,7 @@ export default function MarketingPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-slate-400">
-              Got questions? We've got answers.
+              Got questions? We&apos;ve got answers.
             </p>
           </div>
           
@@ -243,7 +243,7 @@ export default function MarketingPage() {
                 How is the Bitcoin yield generated and when is it paid?
               </AccordionTrigger>
               <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
-                Your savings are routed through secure, non-custodial smart contracts on the Stacks blockchain. These contracts leverage Stacks' consensus mechanism (Proof of Transfer) to stack STX and interact with audited DeFi protocols. The yield generated is paid directly to your connected wallet in Bitcoin.
+                Your savings are routed through secure, non-custodial smart contracts on the Stacks blockchain. These contracts leverage Stacks&apos; consensus mechanism (Proof of Transfer) to stack STX and interact with audited DeFi protocols. The yield generated is paid directly to your connected wallet in Bitcoin.
               </AccordionContent>
             </AccordionItem>
 
