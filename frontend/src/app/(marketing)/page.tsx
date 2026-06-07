@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "next/navigation";
 import { LiveStatsBar } from "@/components/LiveStatsBar";
+import { Wallet, Lock, Coins } from "lucide-react";
+
 
 export default function MarketingPage() {
   const { connect, isConnected } = useWallet();
@@ -72,45 +74,42 @@ export default function MarketingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             {/* Step 1 */}
-            <div className="relative flex flex-col p-6 rounded-2xl bg-slate-900/50 border border-slate-800">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-emerald-500 font-bold text-lg">01</div>
-                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
-                  {/* Icon placeholder */}
-                  <span>Wallet</span>
+            <div className="relative flex flex-col p-8 rounded-2xl bg-slate-900/40 border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgba(16,185,129,0.05)] group">
+              <div className="flex items-center justify-between mb-6">
+                <div className="text-emerald-500/50 font-bold font-mono text-xl group-hover:text-emerald-400 transition-colors">01</div>
+                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400 group-hover:bg-emerald-500/20 group-hover:scale-110 transition-all duration-300">
+                  <Wallet className="h-6 w-6" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Connect Wallet</h3>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors">Connect Wallet</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Connect your Stacks-compatible Web3 wallet (such as Leather or Xverse) securely in a single click. No passwords or sign-up forms are ever required.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="relative flex flex-col p-6 rounded-2xl bg-slate-900/50 border border-slate-800">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-emerald-500 font-bold text-lg">02</div>
-                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
-                  {/* Icon placeholder */}
-                  <span>Vault</span>
+            <div className="relative flex flex-col p-8 rounded-2xl bg-slate-900/40 border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgba(16,185,129,0.05)] group">
+              <div className="flex items-center justify-between mb-6">
+                <div className="text-emerald-500/50 font-bold font-mono text-xl group-hover:text-emerald-400 transition-colors">02</div>
+                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400 group-hover:bg-emerald-500/20 group-hover:scale-110 transition-all duration-300">
+                  <Lock className="h-6 w-6" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Create a Savings Vault</h3>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors">Create a Savings Vault</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Establish a commitment-based vault by selecting your duration and locking in stable savings. Your funds remain secured directly on the blockchain.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="relative flex flex-col p-6 rounded-2xl bg-slate-900/50 border border-slate-800">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-emerald-500 font-bold text-lg">03</div>
-                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
-                  {/* Icon placeholder */}
-                  <span>Yield</span>
+            <div className="relative flex flex-col p-8 rounded-2xl bg-slate-900/40 border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgba(16,185,129,0.05)] group">
+              <div className="flex items-center justify-between mb-6">
+                <div className="text-emerald-500/50 font-bold font-mono text-xl group-hover:text-emerald-400 transition-colors">03</div>
+                <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400 group-hover:bg-emerald-500/20 group-hover:scale-110 transition-all duration-300">
+                  <Coins className="h-6 w-6" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Earn BTC Yield</h3>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors">Earn BTC Yield</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 While locked, your vault automatically routes to secure yield strategies. You collect passive returns denominated entirely in Bitcoin.
               </p>
