@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "next/navigation";
 import { LiveStatsBar } from "@/components/LiveStatsBar";
-import { Wallet, Lock, Coins, Shield, CheckCircle, Link2 } from "lucide-react";
+import { Wallet, Lock, Coins, Shield, CheckCircle, Link2, Github, Twitter } from "lucide-react";
+import Link from "next/link";
 import {
   Accordion,
   AccordionContent,
@@ -268,9 +269,105 @@ export default function MarketingPage() {
       </section>
 
       {/* Footer Section */}
-      <footer className="py-12 border-t border-slate-800 bg-slate-950">
-        <div className="container mx-auto max-w-6xl px-4">
-          <p className="text-center text-slate-500 text-sm">© {new Date().getFullYear()} Verdura. All rights reserved.</p>
+      <footer className="py-16 border-t border-slate-900 bg-slate-950 text-slate-400">
+        <div className="container mx-auto max-w-6xl px-4 md:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            {/* Col 1: Brand */}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center font-bold text-slate-950">
+                  V
+                </div>
+                <span className="text-lg font-bold text-white tracking-wide">Verdura</span>
+              </div>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Securing your wealth in stable USD savings vaults while generating Bitcoin yield on the Stacks blockchain.
+              </p>
+            </div>
+
+            {/* Col 2: Protocol */}
+            <div className="flex flex-col gap-4">
+              <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Protocol</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="https://explorer.hiro.so/?chain=mainnet"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-emerald-400 transition-colors"
+                  >
+                    Stacks Explorer
+                  </a>
+                </li>
+                <li>
+                  <a href="#hero" className="hover:text-emerald-400 transition-colors">
+                    Savings Vaults
+                  </a>
+                </li>
+                <li>
+                  <a href="#how-it-works" className="hover:text-emerald-400 transition-colors">
+                    Yield Strategy
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3: Resources */}
+            <div className="flex flex-col gap-4">
+              <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Resources</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/privacy" className="hover:text-emerald-400 transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="hover:text-emerald-400 transition-colors">
+                    Terms of Use
+                  </Link>
+                </li>
+                <li>
+                  <a href="#faq" className="hover:text-emerald-400 transition-colors">
+                    FAQ
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 4: Community */}
+            <div className="flex flex-col gap-4">
+              <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Community</h4>
+              <div className="flex gap-4">
+                <a
+                  href="https://twitter.com/verdura"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-emerald-500/30 transition-all"
+                  aria-label="Twitter / X"
+                >
+                  <Twitter className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://github.com/MickeeJay/verdura"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-emerald-500/30 transition-all"
+                  aria-label="GitHub"
+                >
+                  <Github className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-slate-900/60 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-slate-500">
+              © {new Date().getFullYear()} Verdura. All rights reserved. Built with 💚 for savers globally.
+            </p>
+            <p className="text-xs text-slate-600">
+              Verdura is a decentralized protocol. Deployed on Stacks L2.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
