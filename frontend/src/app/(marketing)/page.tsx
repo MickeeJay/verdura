@@ -219,8 +219,8 @@ export default function MarketingPage() {
           </div>
           
           <Accordion type="single" collapsible className="w-full space-y-4">
-            <AccordionItem value="item-1" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
-              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+            <AccordionItem value="item-1" className="border border-slate-800 bg-slate-900/40 rounded-xl px-6 data-[state=open]:border-emerald-500/30 data-[state=open]:bg-slate-900/60 transition-all duration-300">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5 data-[state=open]:text-emerald-400 transition-colors">
                 What is Verdura and how does it work?
               </AccordionTrigger>
               <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
@@ -228,8 +228,8 @@ export default function MarketingPage() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-2" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
-              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+            <AccordionItem value="item-2" className="border border-slate-800 bg-slate-900/40 rounded-xl px-6 data-[state=open]:border-emerald-500/30 data-[state=open]:bg-slate-900/60 transition-all duration-300">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5 data-[state=open]:text-emerald-400 transition-colors">
                 How does Verdura protect my savings from inflation?
               </AccordionTrigger>
               <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
@@ -237,8 +237,8 @@ export default function MarketingPage() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-3" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
-              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+            <AccordionItem value="item-3" className="border border-slate-800 bg-slate-900/40 rounded-xl px-6 data-[state=open]:border-emerald-500/30 data-[state=open]:bg-slate-900/60 transition-all duration-300">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5 data-[state=open]:text-emerald-400 transition-colors">
                 How is the Bitcoin yield generated and when is it paid?
               </AccordionTrigger>
               <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
@@ -246,8 +246,8 @@ export default function MarketingPage() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-4" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
-              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+            <AccordionItem value="item-4" className="border border-slate-800 bg-slate-900/40 rounded-xl px-6 data-[state=open]:border-emerald-500/30 data-[state=open]:bg-slate-900/60 transition-all duration-300">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5 data-[state=open]:text-emerald-400 transition-colors">
                 Is Verdura safe and non-custodial?
               </AccordionTrigger>
               <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
@@ -255,8 +255,8 @@ export default function MarketingPage() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-5" className="border-slate-800 bg-slate-900/40 rounded-xl px-6">
-              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5">
+            <AccordionItem value="item-5" className="border border-slate-800 bg-slate-900/40 rounded-xl px-6 data-[state=open]:border-emerald-500/30 data-[state=open]:bg-slate-900/60 transition-all duration-300">
+              <AccordionTrigger className="text-white hover:text-emerald-400 font-semibold hover:no-underline py-5 data-[state=open]:text-emerald-400 transition-colors">
                 What wallets can I use and how do I get started?
               </AccordionTrigger>
               <AccordionContent className="text-slate-400 pb-5 leading-relaxed">
