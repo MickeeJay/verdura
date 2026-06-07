@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "next/navigation";
 import { LiveStatsBar } from "@/components/LiveStatsBar";
-import { Wallet, Lock, Coins } from "lucide-react";
+import { Wallet, Lock, Coins, Shield, CheckCircle, Link2 } from "lucide-react";
 
 
 export default function MarketingPage() {
@@ -19,6 +19,33 @@ export default function MarketingPage() {
       connect();
     }
   };
+
+  const comparisonPoints = [
+    {
+      category: "Currency Stability",
+      icon: Shield,
+      traditional: { label: "NGN Savings", detail: "Subject to 30%+ annual devaluation" },
+      verdura: { label: "USD-Pegged Vaults", detail: "Stable value, immune to local inflation" },
+    },
+    {
+      category: "Yield Type",
+      icon: Coins,
+      traditional: { label: "Fiat Interest", detail: "3–5% APY in depreciating currency" },
+      verdura: { label: "Bitcoin Yield", detail: "Earn BTC, the hardest money on earth" },
+    },
+    {
+      category: "Custody",
+      icon: Lock,
+      traditional: { label: "Custodial", detail: "Bank or fintech holds your funds" },
+      verdura: { label: "Self-Custodied", detail: "You control your keys and your money" },
+    },
+    {
+      category: "Verification",
+      icon: Link2,
+      traditional: { label: "Trust-Based", detail: "No way to independently audit balances" },
+      verdura: { label: "On-Chain Proof", detail: "Every transaction verifiable on Stacks" },
+    },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100">
