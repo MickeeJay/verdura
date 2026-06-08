@@ -6,8 +6,9 @@ import { ArrowLeft, Wallet } from "lucide-react";
 import { CreateVaultForm } from "@/components/vaults/CreateVaultForm";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
+import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 
-export default function CreateVaultPage() {
+function CreateVaultPageContent() {
   const { isConnected, connect } = useWallet();
 
   return (
@@ -48,5 +49,13 @@ export default function CreateVaultPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CreateVaultPage() {
+  return (
+    <ErrorBoundary>
+      <CreateVaultPageContent />
+    </ErrorBoundary>
   );
 }
