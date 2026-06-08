@@ -9,6 +9,7 @@ import { useCurrentBlock } from "@/hooks/useCurrentBlock";
 import { VaultCard } from "@/components/vaults/VaultCard";
 import { formatUSDCx, formatSTX } from "@/lib/utils/format";
 import { useQueryClient } from "@tanstack/react-query";
+import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 import {
   RefreshCw,
   Plus,
@@ -16,21 +17,40 @@ import {
   CircleDollarSign,
   Briefcase,
   Lock,
+  AlertTriangle,
 } from "lucide-react";
 
-export default function DashboardPage() {
+function DashboardPageContent() {
   const { address } = useWallet();
   const queryClient = useQueryClient();
 
-  const { data: vaults, isLoading: vaultsLoading, isRefetching: vaultsRefetching } = useVaults();
-  const { data: profile, isLoading: profileLoading } = useProfile();
-  const { data: currentBlock, isLoading: blockLoading } = useCurrentBlock();
+  const {
+    data: vaults,
+    isLoading: vaultsLoading,
+    isRefetching: vaultsRefetching,
+    isError: vaultsError,
+    error: vaultsErrorObj,
+  } = useVaults();
+
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError: profileError,
+    error: profileErrorObj,
+  } = useProfile();
+
+  const {
+    data: currentBlock,
+    isLoading: blockLoading,
+    isError: blockError,
+    error: blockErrorObj,
+  } = useCurrentBlock();
 
   const handleRefresh = async () => {
     if (!address) return;
-    // Call queryClient.invalidateQueries(['vaults', address])
     await queryClient.invalidateQueries({ queryKey: ["vaults", address] });
     await queryClient.invalidateQueries({ queryKey: ["profile", address] });
+    await queryClient.invalidateQueries({ queryKey: ["currentBlock"] });
   };
 
   // Guard: Do not show wallet-specific data without address
@@ -39,11 +59,94 @@ export default function DashboardPage() {
   }
 
   const isLoading = vaultsLoading || profileLoading || blockLoading;
+  const isError = vaultsError || profileError || blockError;
+
+  if (isError) {
+    const errorMsg =
+      vaultsErrorObj?.message ||
+      profileErrorObj?.message ||
+      blockErrorObj?.message ||
+      "An unexpected error occurred.";
+    return (
+      <div className="container mx-auto px-4 py-12 max-w-md text-center space-y-6" data-testid="dashboard-error">
+        <div className="mx-auto w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+          <AlertTriangle className="size-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
+            Failed to Load Dashboard
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {errorMsg}
+          </p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
+        >
+          <RefreshCw className="size-4" />
+          Retry Loading
+        </button>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8" data-testid="dashboard-loading">
+        <div className="flex justify-between items-center">
+          <div className="space-y-2">
+            <div className="h-8 w-48 skeleton" />
+            <div className="h-4 w-96 skeleton" />
+          </div>
+          <div className="h-10 w-28 skeleton" />
+        </div>
+        <div className="stats-grid">
+          <div className="skeleton skeleton--stat" />
+          <div className="skeleton skeleton--stat" />
+          <div className="skeleton skeleton--stat" />
+        </div>
+        <div className="space-y-4">
+          <div className="h-6 w-48 skeleton" />
+          <div className="dashboard-grid">
+            <div className="skeleton skeleton--card" />
+            <div className="skeleton skeleton--card" />
+            <div className="skeleton skeleton--card" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (vaults === undefined || profile === undefined || currentBlock === undefined) {
+    return (
+      <div className="container mx-auto px-4 py-12 max-w-md text-center space-y-6" data-testid="dashboard-undefined">
+        <div className="mx-auto w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+          <AlertTriangle className="size-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
+            Dashboard Data Unavailable
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            On-chain query returned undefined. Please try refreshing.
+          </p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
+        >
+          <RefreshCw className="size-4" />
+          Refresh
+        </button>
+      </div>
+    );
+  }
 
   // Formatting values
   const totalSaved = profile?.totalSaved ?? 0n;
   const totalYieldEarned = profile?.totalYieldEarned ?? 0n;
-  const vaultsCount = vaults?.length ?? 0;
+  const vaultsCount = vaults.length;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8">
@@ -91,46 +194,36 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="stats-grid">
-        {isLoading ? (
-          <>
-            <div className="skeleton skeleton--stat" />
-            <div className="skeleton skeleton--stat" />
-            <div className="skeleton skeleton--stat" />
-          </>
-        ) : (
-          <>
-            {/* Total Saved */}
-            <div className="stats-card" data-testid="stat-total-saved">
-              <div className="stats-card__icon text-emerald-500">
-                <CircleDollarSign />
-              </div>
-              <span className="stats-card__label">Total Locked</span>
-              <div className="stats-card__value">
-                {formatUSDCx(totalSaved)} USDCx
-              </div>
-            </div>
+        {/* Total Saved */}
+        <div className="stats-card" data-testid="stat-total-saved">
+          <div className="stats-card__icon text-emerald-500">
+            <CircleDollarSign />
+          </div>
+          <span className="stats-card__label">Total Locked</span>
+          <div className="stats-card__value">
+            {formatUSDCx(totalSaved)} USDCx
+          </div>
+        </div>
 
-            {/* Total Yield Earned */}
-            <div className="stats-card" data-testid="stat-total-yield">
-              <div className="stats-card__icon text-amber-500">
-                <TrendingUp />
-              </div>
-              <span className="stats-card__label">Total Yield Earned</span>
-              <div className="stats-card__value text-emerald-500">
-                {formatSTX(totalYieldEarned)} STX
-              </div>
-            </div>
+        {/* Total Yield Earned */}
+        <div className="stats-card" data-testid="stat-total-yield">
+          <div className="stats-card__icon text-amber-500">
+            <TrendingUp />
+          </div>
+          <span className="stats-card__label">Total Yield Earned</span>
+          <div className="stats-card__value text-emerald-500">
+            {formatSTX(totalYieldEarned)} STX
+          </div>
+        </div>
 
-            {/* Total Vaults Count */}
-            <div className="stats-card" data-testid="stat-vaults-count">
-              <div className="stats-card__icon text-blue-500">
-                <Briefcase />
-              </div>
-              <span className="stats-card__label">Active Vaults</span>
-              <div className="stats-card__value">{vaultsCount}</div>
-            </div>
-          </>
-        )}
+        {/* Total Vaults Count */}
+        <div className="stats-card" data-testid="stat-vaults-count">
+          <div className="stats-card__icon text-blue-500">
+            <Briefcase />
+          </div>
+          <span className="stats-card__label">Active Vaults</span>
+          <div className="stats-card__value">{vaultsCount}</div>
+        </div>
       </div>
 
       {/* Vaults Grid or Empty State */}
@@ -139,13 +232,7 @@ export default function DashboardPage() {
           Your Commitment Vaults
         </h2>
 
-        {isLoading ? (
-          <div className="dashboard-grid">
-            <div className="skeleton skeleton--card" />
-            <div className="skeleton skeleton--card" />
-            <div className="skeleton skeleton--card" />
-          </div>
-        ) : vaults && vaults.length > 0 ? (
+        {vaults.length > 0 ? (
           <div className="dashboard-grid" data-testid="vaults-grid">
             {vaults.map((vault) => (
               <VaultCard
@@ -171,5 +258,13 @@ export default function DashboardPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <ErrorBoundary>
+      <DashboardPageContent />
+    </ErrorBoundary>
   );
 }
