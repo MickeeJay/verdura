@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
+import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 
 export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return <ErrorBoundary>{children}</ErrorBoundary>;
 }
