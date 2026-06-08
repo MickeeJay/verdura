@@ -10,6 +10,8 @@ import { VaultCard } from "@/components/vaults/VaultCard";
 import { formatUSDCx, formatSTX } from "@/lib/utils/format";
 import { useQueryClient } from "@tanstack/react-query";
 import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
+import { useTx } from "@/hooks/useTx";
+import { isTerminalStatus, HiroTxStatus } from "@/lib/types/hiro-types";
 import {
   RefreshCw,
   Plus,
@@ -18,11 +20,14 @@ import {
   Briefcase,
   Lock,
   AlertTriangle,
+  Calendar,
+  Percent,
 } from "lucide-react";
 
 function DashboardPageContent() {
   const { address } = useWallet();
   const queryClient = useQueryClient();
+  const { transactions } = useTx();
 
   const {
     data: vaults,
@@ -143,6 +148,13 @@ function DashboardPageContent() {
     );
   }
 
+  // Filter pending vault creations
+  const pendingCreateTxs = transactions.filter(
+    (tx) =>
+      tx.label.startsWith("Create Vault") &&
+      (tx.status === "submitted" || !isTerminalStatus(tx.status as HiroTxStatus))
+  );
+
   // Formatting values
   const totalSaved = profile?.totalSaved ?? 0n;
   const totalYieldEarned = profile?.totalYieldEarned ?? 0n;
@@ -232,15 +244,69 @@ function DashboardPageContent() {
           Your Commitment Vaults
         </h2>
 
-        {vaults.length > 0 ? (
+        {vaults.length > 0 || pendingCreateTxs.length > 0 ? (
           <div className="dashboard-grid" data-testid="vaults-grid">
             {vaults.map((vault) => (
-              <VaultCard
-                key={vault.id}
-                vault={vault}
-                currentBlock={currentBlock ?? 0}
-              />
+              <Link key={vault.id} href={`/vaults/${vault.id}`} className="block transition-transform hover:-translate-y-1 hover:no-underline">
+                <VaultCard
+                  vault={vault}
+                  currentBlock={currentBlock}
+                />
+              </Link>
             ))}
+
+            {/* Pending Vaults (Optimistic UI) */}
+            {pendingCreateTxs.map((tx) => {
+              const pendingName = tx.label.includes(":")
+                ? tx.label.substring(tx.label.indexOf(":") + 1).trim()
+                : "New Savings Vault";
+
+              return (
+                <div
+                  key={tx.txId}
+                  className="vault-card opacity-50 border-amber-500/30 bg-amber-500/5 relative overflow-hidden cursor-not-allowed"
+                  data-testid="vault-card-pending"
+                >
+                  <div className="vault-card__header">
+                    <h3 className="vault-card__name flex items-center gap-2">
+                      <Lock className="size-4 text-amber-500 animate-pulse" />
+                      {pendingName}
+                    </h3>
+                    <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-500 border border-amber-500/20">
+                      Pending...
+                    </span>
+                  </div>
+
+                  <div className="vault-card__body">
+                    <div className="vault-card__row">
+                      <span className="vault-card__label flex items-center gap-1.5">
+                        <CircleDollarSign className="size-4 text-muted-foreground" />
+                        Principal
+                      </span>
+                      <span className="vault-card__value">—</span>
+                    </div>
+
+                    <div className="vault-card__row">
+                      <span className="vault-card__label flex items-center gap-1.5">
+                        <Percent className="size-4 text-muted-foreground" />
+                        Est. Yield
+                      </span>
+                      <span className="vault-card__value font-mono">—</span>
+                    </div>
+
+                    <div className="vault-card__row pt-2 border-t border-border/50">
+                      <span className="vault-card__label flex items-center gap-1.5">
+                        <Calendar className="size-4 text-muted-foreground" />
+                        Maturity
+                      </span>
+                      <span className="vault-card__countdown text-amber-500 animate-pulse">
+                        Creating...
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="empty-state" data-testid="empty-state">
