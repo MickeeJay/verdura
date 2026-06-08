@@ -93,7 +93,7 @@ export function CreateVaultForm() {
         },
         onFinish: (result: { txId: string }) => {
           setTxState({ status: "success", txId: result.txId });
-          addPendingTx(result.txId, "Create Vault");
+          addPendingTx(result.txId, `Create Vault: ${data.name}`);
         },
         onCancel: () => {
           setTxState({ status: "idle" });
