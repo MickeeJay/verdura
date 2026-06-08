@@ -25,6 +25,15 @@ jest.mock("../hooks/useCurrentBlock", () => ({
   useCurrentBlock: jest.fn(),
 }));
 
+jest.mock("../hooks/useTx", () => ({
+  useTx: () => ({
+    transactions: [],
+    pendingCount: 0,
+    addPendingTx: jest.fn(),
+    clearResolved: jest.fn(),
+  }),
+}));
+
 // Helper to wrap components with QueryClientProvider
 const renderWithQueryClient = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({
