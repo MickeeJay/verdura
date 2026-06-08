@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Calendar, CircleDollarSign, Percent, Lock, Share2, Check, Clock, Layers } from "lucide-react";
+import { ArrowLeft, Calendar, CircleDollarSign, Percent, Lock, Share2, Check, Clock, Layers, AlertTriangle } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
 import { fetchVault, fetchIsVaultMature, VaultData } from "@/lib/contracts/savings-vault";
 import { useCurrentBlock } from "@/hooks/useCurrentBlock";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatUSDCx, formatSTX } from "@/lib/utils/format";
 import { getVaultStatus, VaultStatusBadge } from "@/components/vaults/VaultStatusBadge";
 import { blocksToTimeRemaining } from "@/lib/utils/blocks";
@@ -15,12 +15,20 @@ import { WithdrawButton } from "@/components/vaults/WithdrawButton";
 import { TxHistoryList } from "@/components/txs/TxHistoryList";
 import { useVaultTxHistory } from "@/hooks/useVaultTxHistory";
 import { Button } from "@/components/ui/button";
+import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 
-export default function VaultDetailPage({ params }: { params: { vaultId: string } }) {
+function VaultDetailPageContent({ params }: { params: { vaultId: string } }) {
   const { address, stacksNetwork, isConnected, connect } = useWallet();
-  const { data: currentBlock = 0 } = useCurrentBlock();
-  const vaultId = Number(params.vaultId);
+  const queryClient = useQueryClient();
 
+  const {
+    data: currentBlock,
+    isLoading: blockLoading,
+    isError: blockError,
+    error: blockErrorObj,
+  } = useCurrentBlock();
+
+  const vaultId = Number(params.vaultId);
   const [copied, setCopied] = useState(false);
 
   // Fetch Vault Data
@@ -28,6 +36,8 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
     data: vault,
     isLoading: vaultLoading,
     refetch: refetchVault,
+    isError: vaultError,
+    error: vaultErrorObj,
   } = useQuery<VaultData | null>({
     queryKey: ["vault", address, vaultId] as const,
     queryFn: async () => {
@@ -38,7 +48,12 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
   });
 
   // Query Maturity
-  const { data: isVaultMature = false } = useQuery<boolean>({
+  const {
+    data: isVaultMature,
+    isLoading: maturityLoading,
+    isError: maturityError,
+    error: maturityErrorObj,
+  } = useQuery<boolean>({
     queryKey: ["vault-maturity", address, vaultId] as const,
     queryFn: async () => {
       if (!address) return false;
@@ -54,13 +69,15 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
     isLoading: txLoading,
     loadMore: onLoadMore,
     hasMore,
+    isError: txError,
+    error: txErrorObj,
   } = useVaultTxHistory(vaultId);
 
   // Approximate Creation Date
   const [creationDate, setCreationDate] = useState<string>("");
 
   useEffect(() => {
-    if (vault && currentBlock > 0) {
+    if (vault && currentBlock && currentBlock > 0) {
       const start = Number(vault.startBlock);
       const diff = currentBlock - start;
       const timeDiffMs = diff * 10 * 60 * 1000; // 10 mins per block
@@ -72,6 +89,13 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
       );
     }
   }, [vault, currentBlock]);
+
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["vault", address, vaultId] });
+    await queryClient.invalidateQueries({ queryKey: ["vault-maturity", address, vaultId] });
+    await queryClient.invalidateQueries({ queryKey: ["vault-tx-history"] });
+    await queryClient.invalidateQueries({ queryKey: ["currentBlock"] });
+  };
 
   // Copy Vault Link to Clipboard
   const handleShare = () => {
@@ -107,9 +131,42 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
     );
   }
 
-  if (vaultLoading) {
+  const isError = vaultError || maturityError || blockError || txError;
+  if (isError) {
+    const errorMsg =
+      vaultErrorObj?.message ||
+      maturityErrorObj?.message ||
+      blockErrorObj?.message ||
+      txErrorObj?.message ||
+      "An unexpected error occurred.";
     return (
-      <div className="container max-w-7xl mx-auto px-4 py-8 md:py-12 space-y-6">
+      <div className="container mx-auto px-4 py-12 max-w-md text-center space-y-6" data-testid="vault-detail-error">
+        <div className="mx-auto w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+          <AlertTriangle className="size-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
+            Error Loading Vault Details
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {errorMsg}
+          </p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
+        >
+          <RefreshCw className="size-4" />
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  const isLoading = vaultLoading || maturityLoading || blockLoading;
+  if (isLoading) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-8 md:py-12 space-y-6" data-testid="vault-detail-loading">
         <div className="h-6 w-32 skeleton" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
@@ -124,9 +181,35 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
     );
   }
 
-  if (!vault) {
+  // Ensure data is not undefined before rendering
+  if (vault === undefined || isVaultMature === undefined || currentBlock === undefined) {
     return (
-      <div className="container max-w-7xl mx-auto px-4 py-8 md:py-12 text-center space-y-4">
+      <div className="container mx-auto px-4 py-12 max-w-md text-center space-y-6" data-testid="vault-detail-undefined">
+        <div className="mx-auto w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+          <AlertTriangle className="size-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
+            Vault Data Unavailable
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            On-chain queries returned undefined. Please try refreshing.
+          </p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
+        >
+          <RefreshCw className="size-4" />
+          Refresh
+        </button>
+      </div>
+    );
+  }
+
+  if (vault === null) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-8 md:py-12 text-center space-y-4" data-testid="vault-not-found">
         <h2 className="text-xl font-bold">Vault Not Found</h2>
         <p className="text-sm text-muted-foreground">
           The requested vault does not exist or belongs to another account.
@@ -142,7 +225,7 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
   const endBlock = Number(vault.endBlock);
   const status = getVaultStatus(vault.isActive, currentBlock, endBlock);
 
-  // Clamped progress calculation: (currentBlock - startBlock) / (endBlock - startBlock) * 100% clamped to [0, 100]
+  // Clamped progress calculation
   const totalBlocks = endBlock - startBlock;
   const elapsedBlocks = currentBlock - startBlock;
   const progressPercent =
@@ -325,5 +408,13 @@ export default function VaultDetailPage({ params }: { params: { vaultId: string 
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VaultDetailPage({ params }: { params: { vaultId: string } }) {
+  return (
+    <ErrorBoundary>
+      <VaultDetailPageContent params={params} />
+    </ErrorBoundary>
   );
 }
