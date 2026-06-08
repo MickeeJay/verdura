@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/Providers";
 import { TopBar } from "@/components/TopBar";
+import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -36,6 +37,7 @@ export default function RootLayout({
       >
         <Providers>
           <div className="flex flex-col min-h-screen">
+            <NetworkStatusBanner />
             <TopBar />
             <main className="flex-1">{children}</main>
           </div>
