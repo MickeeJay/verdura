@@ -3,16 +3,28 @@
 import React from "react";
 import { useVaultTxHistory } from "@/hooks/useVaultTxHistory";
 import { formatUSDCx } from "@/lib/utils/format";
-import { ArrowDownLeft, ArrowUpRight, Loader2, Calendar } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Loader2, Calendar, AlertCircle } from "lucide-react";
 
 export function VaultTimeline() {
-  const { data, isLoading, loadMore, hasMore } = useVaultTxHistory();
+  const { data, isLoading, isError, error, loadMore, hasMore } = useVaultTxHistory();
 
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center p-8 space-y-4" data-testid="timeline-loading">
         <Loader2 className="size-8 text-emerald-500 animate-spin" />
         <p className="text-sm text-muted-foreground animate-pulse">Loading transaction history...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center p-8 border border-destructive/20 rounded-2xl bg-destructive/5 text-destructive font-medium" data-testid="timeline-error">
+        <AlertCircle className="size-8 mx-auto mb-2 text-destructive animate-pulse" />
+        <h4 className="text-sm font-semibold">Failed to load transaction history</h4>
+        <p className="text-xs mt-1 text-muted-foreground">
+          {error instanceof Error ? error.message : "Network error"}
+        </p>
       </div>
     );
   }

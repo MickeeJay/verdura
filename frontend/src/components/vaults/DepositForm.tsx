@@ -49,7 +49,13 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
   const [txState, setTxState] = useState<TxState>({ status: "idle" });
 
   // Fetch STX Balance
-  const { data: balance = 0n, isLoading: balanceLoading, refetch: refetchBalance } = useQuery<bigint>({
+  const {
+    data: balance = 0n,
+    isLoading: balanceLoading,
+    isError: balanceError,
+    error: balanceErrorObj,
+    refetch: refetchBalance,
+  } = useQuery<bigint>({
     queryKey: ["stxBalance", address],
     queryFn: () => (address ? fetchStxBalance(address) : Promise.resolve(0n)),
     enabled: !!address,
@@ -146,7 +152,7 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
               Amount (STX)
             </label>
             <span className="text-muted-foreground font-medium">
-              Available: {balanceLoading ? "Loading..." : `${formattedBalance} STX`}
+              Available: {balanceLoading ? "Loading..." : balanceError ? "Error loading balance" : `${formattedBalance} STX`}
             </span>
           </div>
 
@@ -167,6 +173,15 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
             </p>
           )}
         </div>
+
+        {balanceError && (
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20 text-xs" role="alert" data-testid="balance-error-alert">
+            <AlertCircle className="size-4 text-destructive" />
+            <span className="text-destructive font-medium">
+              Failed to load wallet balance: {balanceErrorObj instanceof Error ? balanceErrorObj.message : "Network error"}
+            </span>
+          </div>
+        )}
 
         {/* Transaction Statuses */}
         {txState.status === "pending" && (
