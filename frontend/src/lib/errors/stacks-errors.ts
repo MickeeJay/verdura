@@ -1,7 +1,7 @@
 import { getContractErrorMessage, parseClarityErrorCode } from "@/components/errors/ContractError";
 
 export interface ParsedStacksError {
-  raw: any;
+  raw: unknown;
   message: string;
   clarityCode: number | null;
   friendlyMessage: string;
@@ -11,7 +11,7 @@ export interface ParsedStacksError {
  * Parses raw error objects/strings from Stacks API / transaction responses
  * and extracts Clarity abort reasons and error codes.
  */
-export function parseStacksError(error: any): ParsedStacksError {
+export function parseStacksError(error: unknown): ParsedStacksError {
   let message = "An unknown Stacks transaction error occurred.";
   let clarityCode: number | null = null;
 
@@ -20,20 +20,29 @@ export function parseStacksError(error: any): ParsedStacksError {
       message = error;
     } else if (typeof error === "object") {
       // Handle standard Error objects or custom API response error structures
-      message = error.message || error.error || error.reason || JSON.stringify(error);
+      const errObj = error as Record<string, unknown>;
+      const rawMessage = errObj.message ?? errObj.error ?? errObj.reason;
+      if (typeof rawMessage === "string") {
+        message = rawMessage;
+      } else if (rawMessage !== undefined) {
+        message = String(rawMessage);
+      } else {
+        message = JSON.stringify(error);
+      }
     }
   }
 
   // Check object properties for Clarity assertions (e.g. { reason: "ContractAssertionFailed", value: "u102" })
   if (error && typeof error === "object") {
-    if (error.value !== undefined) {
-      clarityCode = parseClarityErrorCode(error.value);
+    const errObj = error as Record<string, unknown>;
+    if (errObj.value !== undefined) {
+      clarityCode = parseClarityErrorCode(errObj.value);
     }
-    if (clarityCode === null && error.reason !== undefined) {
-      clarityCode = parseClarityErrorCode(error.reason);
+    if (clarityCode === null && errObj.reason !== undefined) {
+      clarityCode = parseClarityErrorCode(errObj.reason);
     }
-    if (clarityCode === null && error.code !== undefined) {
-      clarityCode = parseClarityErrorCode(error.code);
+    if (clarityCode === null && errObj.code !== undefined) {
+      clarityCode = parseClarityErrorCode(errObj.code);
     }
   }
 

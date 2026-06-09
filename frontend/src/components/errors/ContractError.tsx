@@ -34,7 +34,7 @@ CLARITY_ERRORS[301] = "Savings profile not found";
 CLARITY_ERRORS[302] = "Savings profile already exists";
 
 // Parse Clarity error strings like "u102", "(err u102)", or raw numbers
-export function parseClarityErrorCode(errorInput: string | number | any): number | null {
+export function parseClarityErrorCode(errorInput: string | number | unknown): number | null {
   if (typeof errorInput === "number") {
     return errorInput;
   }
@@ -48,7 +48,7 @@ export function parseClarityErrorCode(errorInput: string | number | any): number
   return null;
 }
 
-export function getContractErrorMessage(code: number | string | any): string {
+export function getContractErrorMessage(code: number | string | unknown): string {
   const parsedCode = parseClarityErrorCode(code);
   if (parsedCode !== null && parsedCode in CLARITY_ERRORS) {
     return CLARITY_ERRORS[parsedCode];
@@ -57,7 +57,7 @@ export function getContractErrorMessage(code: number | string | any): string {
 }
 
 interface ContractErrorProps {
-  code: number | string | any;
+  code: number | string | unknown;
   className?: string;
 }
 

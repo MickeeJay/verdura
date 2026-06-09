@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Calendar, CircleDollarSign, Percent, Lock, Share2, Check, Clock, Layers, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Calendar, CircleDollarSign, Percent, Lock, Share2, Check, Clock, Layers, AlertTriangle, RefreshCw } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
 import { fetchVault, fetchIsVaultMature, VaultData } from "@/lib/contracts/savings-vault";
 import { useCurrentBlock } from "@/hooks/useCurrentBlock";

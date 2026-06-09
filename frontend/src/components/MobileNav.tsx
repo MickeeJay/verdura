@@ -3,14 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Vault, PlusCircle, User } from "lucide-react";
+import { LayoutDashboard, Vault, PlusCircle, User, LucideIcon } from "lucide-react";
 
-const navItems = [
+interface NavItem {
+  readonly href: string;
+  readonly label: string;
+  readonly icon: LucideIcon;
+  readonly hash?: string;
+}
+
+const navItems: readonly NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard", label: "Vaults", icon: Vault, hash: "#vaults" },
   { href: "/vaults/create", label: "Create", icon: PlusCircle },
   { href: "/profile", label: "Profile", icon: User },
-] as const;
+];
 
 export function MobileNav() {
   const pathname = usePathname();

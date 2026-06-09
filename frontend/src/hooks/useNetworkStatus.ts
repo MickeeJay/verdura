@@ -38,7 +38,7 @@ export function useNetworkStatus() {
         if (active) {
           setIsOnline(response.ok);
         }
-      } catch (error) {
+      } catch {
         if (active) {
           setIsOnline(false);
         }
