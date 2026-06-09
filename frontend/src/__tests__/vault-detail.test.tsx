@@ -223,6 +223,15 @@ describe("Vault Detail Page Components", () => {
 
       expect(await screen.findByRole("alert")).toHaveTextContent("Amount must be a positive number");
     });
+
+    it("renders error message and status if balance loading fails", async () => {
+      global.fetch = jest.fn().mockRejectedValueOnce(new Error("Network connection lost"));
+
+      renderWithProviders(<DepositForm vaultId={1} />);
+
+      expect(await screen.findByTestId("balance-error-alert")).toHaveTextContent("Failed to load wallet balance: Network connection lost");
+      expect(screen.getByText("Available: Error loading balance")).toBeInTheDocument();
+    });
   });
 
   describe("Vault Progress Bar and Details", () => {
