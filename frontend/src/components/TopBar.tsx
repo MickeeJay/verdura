@@ -1,12 +1,33 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { Sun, Moon } from "lucide-react";
 import { WalletConnectButton } from "./wallet/WalletConnectButton";
 import { NetworkBadge } from "./wallet/NetworkBadge";
 import { TxStatusIndicator } from "./tx/TxStatusIndicator";
 
 export function TopBar() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    // Read the current class on mount
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+    setTheme(nextTheme);
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between px-4 md:px-8 max-w-7xl mx-auto">
@@ -53,6 +74,17 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl border border-border bg-card hover:bg-accent hover:text-foreground transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          >
+            {theme === "light" ? (
+              <Moon className="size-5 text-muted-foreground" />
+            ) : (
+              <Sun className="size-5 text-muted-foreground" />
+            )}
+          </button>
           <TxStatusIndicator />
           <NetworkBadge />
           <WalletConnectButton />
@@ -62,3 +94,4 @@ export function TopBar() {
   );
 }
 export default TopBar;
+
