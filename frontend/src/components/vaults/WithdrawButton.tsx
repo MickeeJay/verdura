@@ -158,14 +158,14 @@ export function WithdrawButton({
 
       {/* Transaction status info */}
       {txState.status === "pending" && (
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs" role="status">
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs" role="status" aria-live="polite">
           <Loader2 className="size-4 text-amber-500 animate-spin" />
           <span className="text-amber-600 dark:text-amber-400 font-medium">Processing withdrawal on Stacks...</span>
         </div>
       )}
 
       {txState.status === "success" && (
-        <div className="flex flex-col gap-1.5 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs" role="status">
+        <div className="flex flex-col gap-1.5 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs" role="status" aria-live="polite">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-4 text-emerald-500" />
             <span className="text-emerald-600 dark:text-emerald-400 font-medium">Withdrawal transaction broadcasted!</span>
@@ -182,7 +182,7 @@ export function WithdrawButton({
       )}
 
       {txState.status === "error" && (
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20 text-xs" role="alert">
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20 text-xs" role="alert" aria-live="assertive">
           <AlertCircle className="size-4 text-destructive" />
           <span className="text-destructive font-medium">{txState.message}</span>
         </div>
