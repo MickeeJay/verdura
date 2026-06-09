@@ -15,7 +15,7 @@ interface SavingsStatsProps {
 export function SavingsStats({ profile, currentBlock, isLoading }: SavingsStatsProps) {
   if (isLoading) {
     return (
-      <div className="stats-grid" data-testid="stats-loading">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" data-testid="stats-loading">
         <div className="skeleton skeleton--stat" />
         <div className="skeleton skeleton--stat" />
         <div className="skeleton skeleton--stat" />
@@ -41,7 +41,7 @@ export function SavingsStats({ profile, currentBlock, isLoading }: SavingsStatsP
   }
 
   return (
-    <div className="stats-grid" data-testid="savings-stats">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" data-testid="savings-stats">
       {/* Total Saved */}
       <div className="stats-card" data-testid="stat-total-saved">
         <div className="stats-card__icon text-emerald-500">
