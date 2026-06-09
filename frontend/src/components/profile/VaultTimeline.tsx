@@ -45,7 +45,7 @@ export function VaultTimeline() {
 
   return (
     <div className="space-y-6" data-testid="vault-timeline">
-      <h3 className="text-lg font-bold text-foreground">Savings History Timeline</h3>
+      <h2 className="text-lg font-bold text-foreground">Savings History Timeline</h2>
       
       <div className="relative border-l border-border ml-4 pl-6 space-y-6">
         {transactions.map((tx) => {

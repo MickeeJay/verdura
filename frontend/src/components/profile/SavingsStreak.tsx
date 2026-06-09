@@ -33,7 +33,7 @@ export function SavingsStreak({ streak, isLoading }: SavingsStreakProps) {
     >
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-medium text-muted-foreground">Savings Streak</h3>
+          <h2 className="text-sm font-medium text-muted-foreground">Savings Streak</h2>
           <p className="text-2xl font-extrabold text-card-foreground mt-1 flex items-center gap-2">
             <Flame className={`size-6 ${streakCount > 0 ? "text-orange-500 fill-orange-500 animate-bounce" : "text-muted-foreground"}`} />
             {streakCount} Vault{streakCount !== 1 ? "s" : ""}

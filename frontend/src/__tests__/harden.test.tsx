@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 // Mock router
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
+  usePathname: () => "/dashboard",
 }));
 
 // Mock useWallet

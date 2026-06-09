@@ -31,7 +31,7 @@ export function LeaderboardScore({ score, isLoading }: LeaderboardScoreProps) {
       </div>
 
       <div className="flex items-center gap-1.5 justify-center mb-2">
-        <h3 className="text-sm font-medium text-muted-foreground">Leaderboard Score</h3>
+        <h2 className="text-sm font-medium text-muted-foreground">Leaderboard Score</h2>
         <div className="relative group cursor-pointer inline-flex items-center" data-testid="formula-tooltip-trigger">
           <Info className="size-4 text-muted-foreground hover:text-foreground transition-colors" />
           <div
