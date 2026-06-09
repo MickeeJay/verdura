@@ -21,7 +21,7 @@ export function VaultTimeline() {
     return (
       <div className="text-center p-8 border border-destructive/20 rounded-2xl bg-destructive/5 text-destructive font-medium" data-testid="timeline-error">
         <AlertCircle className="size-8 mx-auto mb-2 text-destructive animate-pulse" />
-        <h4 className="text-sm font-semibold">Failed to load transaction history</h4>
+        <h3 className="text-sm font-semibold">Failed to load transaction history</h3>
         <p className="text-xs mt-1 text-muted-foreground">
           {error instanceof Error ? error.message : "Network error"}
         </p>
@@ -35,7 +35,7 @@ export function VaultTimeline() {
     return (
       <div className="text-center p-8 border border-dashed border-border rounded-2xl bg-card/50" data-testid="timeline-empty">
         <Calendar className="size-10 text-muted-foreground mx-auto mb-3 opacity-40" />
-        <h4 className="text-base font-semibold text-foreground">No Transactions Found</h4>
+        <h3 className="text-base font-semibold text-foreground">No Transactions Found</h3>
         <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
           Your transaction history will appear here once you perform deposits or withdrawals.
         </p>
