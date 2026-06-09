@@ -106,14 +106,14 @@ function DashboardPageContent() {
           </div>
           <div className="h-10 w-28 skeleton" />
         </div>
-        <div className="stats-grid">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           <div className="skeleton skeleton--stat" />
           <div className="skeleton skeleton--stat" />
-          <div className="skeleton skeleton--stat" />
+          <div className="skeleton skeleton--stat col-span-2 md:col-span-1" />
         </div>
         <div className="space-y-4">
           <div className="h-6 w-48 skeleton" />
-          <div className="dashboard-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="skeleton skeleton--card" />
             <div className="skeleton skeleton--card" />
             <div className="skeleton skeleton--card" />
@@ -205,14 +205,14 @@ function DashboardPageContent() {
       </div>
 
       {/* Stats Grid */}
-      <div className="stats-grid">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
         {/* Total Saved */}
         <div className="stats-card" data-testid="stat-total-saved">
           <div className="stats-card__icon text-emerald-500">
             <CircleDollarSign />
           </div>
           <span className="stats-card__label">Total Locked</span>
-          <div className="stats-card__value">
+          <div className="stats-card__value text-lg sm:text-2xl">
             {formatUSDCx(totalSaved)} USDCx
           </div>
         </div>
@@ -223,18 +223,18 @@ function DashboardPageContent() {
             <TrendingUp />
           </div>
           <span className="stats-card__label">Total Yield Earned</span>
-          <div className="stats-card__value text-emerald-500">
+          <div className="stats-card__value text-lg sm:text-2xl text-emerald-500">
             {formatSTX(totalYieldEarned)} STX
           </div>
         </div>
 
         {/* Total Vaults Count */}
-        <div className="stats-card" data-testid="stat-vaults-count">
+        <div className="stats-card col-span-2 md:col-span-1" data-testid="stat-vaults-count">
           <div className="stats-card__icon text-blue-500">
             <Briefcase />
           </div>
           <span className="stats-card__label">Active Vaults</span>
-          <div className="stats-card__value">{vaultsCount}</div>
+          <div className="stats-card__value text-lg sm:text-2xl">{vaultsCount}</div>
         </div>
       </div>
 
@@ -245,7 +245,7 @@ function DashboardPageContent() {
         </h2>
 
         {vaults.length > 0 || pendingCreateTxs.length > 0 ? (
-          <div className="dashboard-grid" data-testid="vaults-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="vaults-grid">
             {vaults.map((vault) => (
               <Link key={vault.id} href={`/vaults/${vault.id}`} className="block transition-transform hover:-translate-y-1 hover:no-underline">
                 <VaultCard
