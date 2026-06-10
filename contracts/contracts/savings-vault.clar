@@ -1,4 +1,10 @@
 ;; savings-vault.clar
+;;
+;; Security Audit Documentation:
+;; - Integer Overflow/Underflow: Clarity's native arithmetic operators (+, -, *, /) fail-revert on overflow and underflow, protecting all operations (e.g. end-block calculation and share updates).
+;; - Reentrancy: Clarity is immune to reentrancy as recursion is disallowed and there are no fallback functions or dynamic dispatch callers that permit context switching during contract calls.
+;; - Access Control: Every public state-mutating function has strict authentication checks (e.g., verifying contract-caller or tx-sender to prevent unauthorized vault creation or actions).
+;; - Flash Loan Attack Surface: Not applicable. The vault operates on time-locked deposits and simulated yield. There is no active flash lending pool or instant pricing oracles that can be manipulated within a single block transaction.
 
 (define-trait sip-010-trait
   (
