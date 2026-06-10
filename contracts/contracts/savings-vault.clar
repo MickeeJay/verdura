@@ -194,3 +194,20 @@
 (define-read-only (get-all-vaults-by-owner (owner principal))
   (get active-vaults (fold accumulate-active-vault vault-ids-list { owner: owner, active-vaults: (list ) }))
 )
+
+;; Sanity check: verify that total-vault-shares tracked locally matches
+;; the total-shares-issued reported by the yield-router.
+(define-read-only (check-invariants)
+  (let
+    (
+      (local-shares (var-get total-vault-shares))
+      (router-stats (contract-call? .yield-router get-router-stats))
+      (router-shares (get total-shares router-stats))
+    )
+    {
+      vault-total-shares: local-shares,
+      router-total-shares: router-shares,
+      shares-match: (is-eq local-shares router-shares)
+    }
+  )
+)
