@@ -75,7 +75,7 @@
     (
       (vault (unwrap! (map-get? vaults { owner: tx-sender, vault-id: vault-id }) err-not-found))
     )
-    (asserts! (is-eq tx-sender tx-sender) err-unauthorized)
+    (asserts! (is-eq contract-caller tx-sender) err-unauthorized)
     (asserts! (get is-active vault) err-vault-locked)
     (asserts! (> amount u0) err-invalid-amount)
 
