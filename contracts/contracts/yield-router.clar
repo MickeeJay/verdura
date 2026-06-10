@@ -58,6 +58,7 @@
         (new-shares (+ (get shares existing-position) shares-minted))
         (new-deposited (+ (get deposited-amount existing-position) amount))
       )
+      (asserts! (> shares-minted u0) err-zero-amount)
       (map-set yield-positions
         { vault-id: vault-id, owner: owner }
         {
