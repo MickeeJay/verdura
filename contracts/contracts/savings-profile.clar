@@ -1,9 +1,15 @@
 ;; savings-profile.clar
+;;
+;; Security Audit Documentation:
+;; - Caller Spoofing: The functions `record-deposit` and `record-withdrawal` enforce `(asserts! (is-eq contract-caller .savings-vault) err-unauthorized)`.
+;;   This statically binds the caller to the deployer-owned `.savings-vault` contract, preventing arbitrary principals from spoofing user profiles or manipulating streaks/stats.
+;; - Zero-Amount Guards: Both record functions assert that the transaction amount is strictly greater than zero to prevent spamming empty transactions.
 
 ;; Error Constants
 (define-constant err-unauthorized (err u300))
 (define-constant err-profile-not-found (err u301))
 (define-constant err-already-exists (err u302))
+(define-constant err-invalid-amount (err u303))
 
 ;; Data Maps
 (define-map profiles
