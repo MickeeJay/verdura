@@ -77,12 +77,17 @@ export function DepositForm({ vaultId, onSuccess }: DepositFormProps) {
     if (!address) return;
 
     // Manual validation — always uses latest balance
-    const val = Number(data.amount);
-    if (!data.amount || data.amount.trim() === "") {
+    const sanitizedAmount = data.amount.trim();
+    if (!sanitizedAmount) {
       setError("amount", { message: "Amount is required" });
       return;
     }
-    if (isNaN(val) || val <= 0) {
+    if (!/^\d+(\.\d+)?$/.test(sanitizedAmount)) {
+      setError("amount", { message: "Amount must be a valid positive number" });
+      return;
+    }
+    const val = Number(sanitizedAmount);
+    if (val <= 0) {
       setError("amount", { message: "Amount must be a positive number" });
       return;
     }
