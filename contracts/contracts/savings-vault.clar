@@ -41,6 +41,7 @@
 
 ;; Data Variables
 (define-data-var next-vault-id uint u1)
+(define-data-var total-vault-shares uint u0)
 
 ;; Public Functions
 (define-public (create-vault (name (string-ascii 64)) (duration-blocks uint) (yield-enabled bool))
@@ -96,6 +97,7 @@
             })
           )
           (unwrap! (contract-call? .savings-profile record-deposit tx-sender vault-id amount) err-unauthorized)
+          (var-set total-vault-shares (+ (var-get total-vault-shares) shares))
           (ok true)
         )
       )
@@ -128,6 +130,7 @@
     (if (get yield-enabled vault)
       (let
         (
+          (vault-shares (get yield-shares vault))
           (amount-redeemed (unwrap! (contract-call? .yield-router withdraw-from-yield vault-id caller) err-unauthorized))
         )
         (try! (as-contract (stx-transfer? amount-redeemed tx-sender caller)))
@@ -136,6 +139,7 @@
           (merge vault { is-active: false, yield-shares: u0 })
         )
         (unwrap! (contract-call? .savings-profile record-withdrawal caller vault-id amount (- amount-redeemed amount)) err-unauthorized)
+        (var-set total-vault-shares (- (var-get total-vault-shares) vault-shares))
         (ok amount-redeemed)
       )
       (begin
