@@ -1,14 +1,31 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { useWallet } from "@/hooks/useWallet";
 import { useProfile, useLeaderboardScore, useSavingsStreak } from "@/hooks/useProfile";
 import { useCurrentBlock } from "@/hooks/useCurrentBlock";
 import { SavingsStats } from "@/components/profile/SavingsStats";
 import { SavingsStreak } from "@/components/profile/SavingsStreak";
 import { LeaderboardScore } from "@/components/profile/LeaderboardScore";
-import { VaultTimeline } from "@/components/profile/VaultTimeline";
 import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
+
+const VaultTimeline = dynamic(
+  () =>
+    import("@/components/profile/VaultTimeline").then((mod) => ({
+      default: mod.VaultTimeline,
+    })),
+  {
+    loading: () => (
+      <div className="space-y-4">
+        <div className="h-6 w-40 skeleton" />
+        <div className="h-48 skeleton" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
 import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, User, AlertTriangle } from "lucide-react";
 

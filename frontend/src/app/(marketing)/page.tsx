@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "next/navigation";
@@ -86,6 +87,19 @@ export default function MarketingPage() {
             >
               Learn More
             </Button>
+          </div>
+
+          <div className="relative w-full max-w-4xl mt-4 mb-16 mx-auto rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/40 p-2 shadow-2xl shadow-emerald-500/5 backdrop-blur-sm">
+            <div className="relative rounded-xl overflow-hidden border border-slate-800">
+              <Image
+                src="/images/hero_dashboard.webp"
+                alt="Verdura Savings Dashboard Mockup"
+                width={1200}
+                height={675}
+                priority
+                className="w-full h-auto object-cover transform hover:scale-[1.01] transition-transform duration-500"
+              />
+            </div>
           </div>
         </div>
         <div className="mt-8">

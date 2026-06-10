@@ -6,13 +6,46 @@ import { ArrowLeft, Calendar, CircleDollarSign, Percent, Lock, Share2, Check, Cl
 import { useWallet } from "@/hooks/useWallet";
 import { fetchVault, fetchIsVaultMature, VaultData } from "@/lib/contracts/savings-vault";
 import { useCurrentBlock } from "@/hooks/useCurrentBlock";
+import dynamic from "next/dynamic";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatUSDCx, formatSTX } from "@/lib/utils/format";
 import { getVaultStatus, VaultStatusBadge } from "@/components/vaults/VaultStatusBadge";
 import { blocksToTimeRemaining } from "@/lib/utils/blocks";
-import { DepositForm } from "@/components/vaults/DepositForm";
-import { WithdrawButton } from "@/components/vaults/WithdrawButton";
-import { TxHistoryList } from "@/components/txs/TxHistoryList";
+
+const DepositForm = dynamic(
+  () => import("@/components/vaults/DepositForm").then((mod) => mod.DepositForm),
+  {
+    loading: () => (
+      <div className="h-64 bg-card border border-border rounded-2xl animate-pulse" />
+    ),
+    ssr: false,
+  }
+);
+
+const WithdrawButton = dynamic(
+  () => import("@/components/vaults/WithdrawButton").then((mod) => mod.WithdrawButton),
+  {
+    loading: () => (
+      <div className="h-11 bg-card border border-border rounded-xl animate-pulse" />
+    ),
+    ssr: false,
+  }
+);
+
+const TxHistoryList = dynamic(
+  () => import("@/components/txs/TxHistoryList").then((mod) => mod.TxHistoryList),
+  {
+    loading: () => (
+      <div className="space-y-3">
+        <div className="h-12 bg-card border border-border rounded-xl animate-pulse" />
+        <div className="h-12 bg-card border border-border rounded-xl animate-pulse" />
+        <div className="h-12 bg-card border border-border rounded-xl animate-pulse" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
 import { useVaultTxHistory } from "@/hooks/useVaultTxHistory";
 import { Button } from "@/components/ui/button";
 import { ErrorBoundary } from "@/components/errors/ErrorBoundary";

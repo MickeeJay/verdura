@@ -1,9 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { useTx } from "@/hooks/useTx";
 import { Activity } from "lucide-react";
-import { PendingTxDrawer } from "./PendingTxDrawer";
+
+const PendingTxDrawer = dynamic(
+  () =>
+    import("./PendingTxDrawer").then((mod) => ({
+      default: mod.PendingTxDrawer,
+    })),
+  {
+    loading: () => (
+      <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 bg-background/50 backdrop-blur-sm" />
+        <div className="relative w-full max-w-md bg-card border-l border-border h-full animate-pulse" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
 
 export function TxStatusIndicator() {
   const { pendingCount } = useTx();

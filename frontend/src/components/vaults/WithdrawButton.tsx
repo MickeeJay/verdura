@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { useWallet } from "@/hooks/useWallet";
 import { useTx } from "@/hooks/useTx";
 import { buildWithdrawTx } from "@/lib/contracts/savings-vault";
@@ -8,6 +9,11 @@ import { openContractCall } from "@stacks/connect";
 import { useQueryClient } from "@tanstack/react-query";
 import { blocksToTimeRemaining } from "@/lib/utils/blocks";
 import { Loader2, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+
+const ConfettiComponent = dynamic(
+  () => import("./ConfettiComponent"),
+  { ssr: false }
+);
 
 interface WithdrawButtonProps {
   vaultId: number;
@@ -36,6 +42,7 @@ export function WithdrawButton({
   const { addPendingTx } = useTx();
   const queryClient = useQueryClient();
   const [txState, setTxState] = useState<TxState>({ status: "idle" });
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const timeRemaining = blocksToTimeRemaining(currentBlock, endBlock);
 
@@ -55,19 +62,7 @@ export function WithdrawButton({
         onFinish: async (result: { txId: string }) => {
           setTxState({ status: "success", txId: result.txId });
           addPendingTx(result.txId, "Withdraw Principal & Yield");
-          
-          // Trigger confetti dynamically
-          try {
-            const confetti = (await import("canvas-confetti")).default;
-            confetti({
-              particleCount: 150,
-              spread: 80,
-              origin: { y: 0.6 },
-              colors: ["#10b981", "#3b82f6", "#f59e0b"],
-            });
-          } catch (e) {
-            console.error("Failed to load confetti dynamically:", e);
-          }
+          setShowConfetti(true);
 
           queryClient.invalidateQueries({ queryKey: ["vault", address, vaultId] });
           queryClient.invalidateQueries({ queryKey: ["vaults", address] });
@@ -87,8 +82,8 @@ export function WithdrawButton({
   };
 
   const preloadConfetti = () => {
-    import("canvas-confetti").catch((err) => {
-      console.warn("Failed to pre-load canvas-confetti:", err);
+    import("./ConfettiComponent").catch((err) => {
+      console.warn("Failed to pre-load ConfettiComponent:", err);
     });
   };
 
@@ -187,6 +182,7 @@ export function WithdrawButton({
           <span className="text-destructive font-medium">{txState.message}</span>
         </div>
       )}
+      {showConfetti && <ConfettiComponent />}
     </div>
   );
 }

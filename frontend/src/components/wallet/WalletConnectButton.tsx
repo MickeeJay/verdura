@@ -1,10 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { truncateAddress } from "@/lib/utils";
-import { WalletModal } from "./WalletModal";
+
+const WalletModal = dynamic(
+  () => import("./WalletModal").then((mod) => ({ default: mod.WalletModal })),
+  {
+    loading: () => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-sm">
+        <div className="w-[420px] h-[280px] bg-card border border-border rounded-xl animate-pulse" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
 
 export function WalletConnectButton() {
   const { address, isConnected, disconnect } = useWallet();

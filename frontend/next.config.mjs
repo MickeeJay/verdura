@@ -1,11 +1,12 @@
-import type { NextConfig } from "next";
+// @ts-check
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const analyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   experimental: {
     optimizeCss: true,
     optimizePackageImports: [
