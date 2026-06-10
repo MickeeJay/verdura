@@ -105,4 +105,43 @@ describe("yield-router", () => {
     // Net gain should be exactly 1531 micro-STX
     expect(balanceAfter - balanceBefore).toBe(1531n);
   });
+
+  it("should fail deposit attempts resulting in zero shares due to rounding/truncation", () => {
+    const amount = 1000000;
+
+    // Seed the yield router contract with STX to fund yield payouts
+    simnet.transferSTX(100000, "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.yield-router", wallet_1);
+
+    // 1. Create a yield-bearing vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Dust Vault"),
+      Cl.uint(50000),
+      Cl.bool(true)
+    ], wallet_1);
+
+    // 2. Deposit 1 STX
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(amount)
+    ], wallet_1);
+
+    // 3. Mine 50000 blocks to accrue yield (increasing assets)
+    simnet.mineEmptyBlocks(50000);
+
+    // 4. Try depositing 1 micro-STX (dust), which would result in 0 minted shares due to division truncation
+    const result = simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1)
+    ], wallet_1);
+
+    // Should fail with err-unauthorized (u100) because savings-vault wraps route-to-yield's err-zero-amount (u202)
+    expect(result.result).toBeErr(Cl.uint(100));
+  });
+
+  it("should fail admin function calls when executed via a proxy contract (contract-caller check)", () => {
+    // Attempting to call pause-router via proxy contract
+    // Even if tx-sender is deployer (owner), the contract-caller is .proxy-mock, so it must fail.
+    const result = simnet.callPublicFn("proxy-mock", "call-pause-router", [], deployer);
+    expect(result.result).toBeErr(Cl.uint(200)); // err-unauthorized
+  });
 });
