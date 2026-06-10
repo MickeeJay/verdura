@@ -314,4 +314,24 @@ describe("savings-profile", () => {
     const scoreResult = simnet.callReadOnlyFn("savings-profile", "get-leaderboard-score", [Cl.principal(wallet_1)], wallet_1);
     expect(scoreResult.result).toBeUint(306);
   });
+
+  it("should fail vault withdrawal if vault has zero balance (zero-amount guard in savings-profile)", () => {
+    // 1. Create a vault with 144 blocks duration
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Zero Balance Vault"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+
+    // 2. Mine 144 blocks (maturity) without depositing anything
+    simnet.mineEmptyBlocks(144);
+
+    // 3. Attempt withdrawal
+    const withdrawResult = simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+
+    // Should fail with Clarity STX transfer error (err u3) because amount is 0
+    expect(withdrawResult.result).toBeErr(Cl.uint(3));
+  });
 });
