@@ -25,6 +25,11 @@ path = "contracts/traits.clar"
 clarity_version = 2
 epoch = 2.5
 
+[contracts.proxy-mock]
+path = "contracts/proxy-mock.clar"
+clarity_version = 2
+epoch = 2.5
+
 # Check-checker settings:
 # trusted_sender: if true, inputs are trusted after tx_sender has been checked.
 # trusted_caller: if true, inputs are trusted after contract-caller has been checked.
