@@ -121,6 +121,7 @@
       (amount (get principal-amount vault))
       (caller tx-sender)
     )
+    (asserts! (is-eq contract-caller tx-sender) err-unauthorized)
     (asserts! (get is-active vault) err-vault-matured)
     (asserts! (>= block-height (get end-block vault)) err-vault-locked)
 
