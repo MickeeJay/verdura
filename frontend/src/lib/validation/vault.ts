@@ -5,7 +5,10 @@ export const createVaultSchema = z.object({
     .string()
     .trim()
     .min(1, { message: "Vault name is required" })
-    .max(64, { message: "Vault name cannot exceed 64 characters" }),
+    .max(64, { message: "Vault name cannot exceed 64 characters" })
+    .refine((val) => !/[<>]/g.test(val), {
+      message: "Vault name cannot contain '<' or '>' characters",
+    }),
   durationDays: z
     .number({ invalid_type_error: "Duration must be a number" })
     .int({ message: "Duration must be a whole number of days" })
