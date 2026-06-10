@@ -27,6 +27,7 @@
 (define-public (record-deposit (owner principal) (vault-id uint) (amount uint))
   (begin
     (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
+    (asserts! (> amount u0) err-invalid-amount)
     (match (map-get? profiles owner)
       profile
       (map-set profiles owner
@@ -51,6 +52,7 @@
 (define-public (record-withdrawal (owner principal) (vault-id uint) (amount uint) (yield-earned uint))
   (begin
     (asserts! (is-eq contract-caller .savings-vault) err-unauthorized)
+    (asserts! (> amount u0) err-invalid-amount)
     (let
       (
         (profile (unwrap! (map-get? profiles owner) err-profile-not-found))
