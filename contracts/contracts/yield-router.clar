@@ -1,4 +1,10 @@
 ;; yield-router.clar
+;;
+;; Security Audit Documentation:
+;; - Router Pause Bypass: The pause check `(asserts! (not (var-get router-paused)) err-router-paused)` is the first assertion in both `route-to-yield` and `withdraw-from-yield`, preventing any state mutation when paused.
+;; - Share Manipulation: Zero-amount deposits are rejected by the `(asserts! (> amount u0) err-zero-amount)` guard. A secondary guard ensures shares-minted > 0 to prevent rounding exploits with dust amounts.
+;; - Token Whitelisting: Only `contract-caller` addresses registered in the `supported-tokens` map can invoke `route-to-yield` and `withdraw-from-yield`, restricting access to the savings-vault contract.
+;; - Admin Functions: `pause-router`, `resume-router`, and `set-supported-token` verify `contract-caller` against the stored `contract-owner` to prevent tx-sender spoofing via malicious proxy contracts.
 
 ;; Error Constants
 (define-constant err-unauthorized (err u200))
