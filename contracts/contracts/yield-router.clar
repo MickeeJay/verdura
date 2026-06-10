@@ -175,7 +175,7 @@
 
 (define-public (pause-router)
   (begin
-    (asserts! (is-eq tx-sender (var-get contract-owner)) err-unauthorized)
+    (asserts! (is-eq contract-caller (var-get contract-owner)) err-unauthorized)
     (var-set router-paused true)
     (ok true)
   )
@@ -183,7 +183,7 @@
 
 (define-public (resume-router)
   (begin
-    (asserts! (is-eq tx-sender (var-get contract-owner)) err-unauthorized)
+    (asserts! (is-eq contract-caller (var-get contract-owner)) err-unauthorized)
     (var-set router-paused false)
     (ok true)
   )
@@ -191,7 +191,7 @@
 
 (define-public (set-supported-token (token principal) (supported bool))
   (begin
-    (asserts! (is-eq tx-sender (var-get contract-owner)) err-unauthorized)
+    (asserts! (is-eq contract-caller (var-get contract-owner)) err-unauthorized)
     (map-set supported-tokens token supported)
     (ok true)
   )
