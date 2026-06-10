@@ -282,4 +282,69 @@ describe("savings-vault", () => {
     // We expect a list containing two vault IDs: 1 and 2
     expect(result.result).toBeList([Cl.uint(1), Cl.uint(2)]);
   });
+
+  it("should verify that check-invariants read-only function returns matching shares", () => {
+    // Create vault and deposit to check shares tracking
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Invariant Vault"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    // Deposit STX
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(10000)
+    ], wallet_1);
+
+    const checkResult = simnet.callReadOnlyFn("savings-vault", "check-invariants", [], wallet_1);
+    expect(checkResult.result).toBeTuple({
+      "vault-total-shares": Cl.uint(10000),
+      "router-total-shares": Cl.uint(10000),
+      "shares-match": Cl.bool(true)
+    });
+  });
+
+  it("should fail deposit if caller is a proxy contract (contract-caller spoof protection)", () => {
+    // Create vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Bypass Deposit Vault"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    // Call deposit via proxy-mock
+    const result = simnet.callPublicFn("proxy-mock", "call-deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+
+    // Should return err-unauthorized (u100) since contract-caller is .proxy-mock, not wallet_1
+    expect(result.result).toBeErr(Cl.uint(100));
+  });
+
+  it("should fail withdraw if caller is a proxy contract (contract-caller spoof protection)", () => {
+    // Create vault
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Bypass Withdraw Vault"),
+      Cl.uint(144),
+      Cl.bool(true)
+    ], wallet_1);
+
+    // Deposit STX
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+
+    simnet.mineEmptyBlocks(144);
+
+    // Call withdraw via proxy-mock
+    const result = simnet.callPublicFn("proxy-mock", "call-withdraw", [
+      Cl.uint(1)
+    ], wallet_1);
+
+    // Should return err-unauthorized (u100) since contract-caller is .proxy-mock, not wallet_1
+    expect(result.result).toBeErr(Cl.uint(100));
+  });
 });
