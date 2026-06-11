@@ -314,4 +314,44 @@ describe("verdura-integration-tests", () => {
       "is-active": Cl.bool(true)
     }));
   });
+
+  it("multiple-users-yield-bearing-vaults", () => {
+    const userA = wallet_1;
+    const userB = wallet_2;
+    const amountA = 1000000; // 1 STX
+    const amountB = 2000000; // 2 STX
+    const duration = 1000;
+
+    // Seed the yield router contract with STX to fund yield payouts
+    simnet.transferSTX(500000, `${deployer}.yield-router`, userA);
+
+    // 1. Create yield-bearing vaults
+    simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault A"), Cl.uint(duration), Cl.bool(true)], userA);
+    simnet.callPublicFn("savings-vault", "create-vault", [Cl.stringAscii("Vault B"), Cl.uint(duration), Cl.bool(true)], userB);
+
+    // 2. Deposit STX
+    simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(1), Cl.uint(amountA)], userA);
+    simnet.callPublicFn("savings-vault", "deposit", [Cl.uint(2), Cl.uint(amountB)], userB);
+
+    // 3. Mine 1000 blocks
+    simnet.mineEmptyBlocks(duration + 5);
+
+    // 4. Verify yield balances independently
+    // Expected yield A = (1,000,000 * 1005 * 8) / 5,256,000 = 1529
+    // Expected yield B = (2,000,000 * 1005 * 8) / 5,256,000 = 3059
+    const balanceA = simnet.callReadOnlyFn("yield-router", "get-yield-balance", [Cl.uint(1), Cl.principal(userA)], userA);
+    const balanceB = simnet.callReadOnlyFn("yield-router", "get-yield-balance", [Cl.uint(2), Cl.principal(userB)], userB);
+
+    expect(balanceA.result).toBeOk(Cl.uint(amountA + 1530));
+    expect(balanceB.result).toBeOk(Cl.uint(amountB + 3059));
+
+    // 5. Withdraw and check success
+    const withdrawA = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(1)], userA);
+    const withdrawB = simnet.callPublicFn("savings-vault", "withdraw", [Cl.uint(2)], userB);
+
+    // withdrawA runs on block 1012 (elapsed blocks = 1006)
+    // withdrawB runs on block 1013 (elapsed blocks = 1007 + 1 block after A's withdraw)
+    expect(withdrawA.result).toBeOk(Cl.uint(amountA + 1532)); 
+    expect(withdrawB.result).toBeOk(Cl.uint(amountB + 3065)); 
+  });
 });
