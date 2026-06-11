@@ -1,4 +1,5 @@
 # Frontend Performance Optimization Report
+This document records the performance optimizations appied to the verdura frontend to achieve an optimized production size, efficient assets delivery, fast page transitions and, and consistent Lighthous scores of 85+ on mobile
 
 This document records the performance optimizations applied to the Verdura frontend to achieve an optimized production bundle size, efficient assets delivery, fast page transitions, and consistent Lighthouse scores of 85+ on mobile.
 
@@ -20,7 +21,7 @@ This document records the performance optimizations applied to the Verdura front
 
 4. **Webpack Configuration & Next.js Tuning**:
    - Enabled `@next/bundle-analyzer` under the `ANALYZE=true` build flag.
-   - Turned on `experimental.optimizeCss` (using `critters`) to inline critical CSS.
+   - Turned on `experimental.optimizeCSS` (using `critters`) to inline critical CSS.
    - Turned on `experimental.optimizePackageImports` for UI libraries (`lucide-react`, `radix-ui`, `sonner`, `@stacks/connect`, `@stacks/transactions`, `@tanstack/react-query`).
    - Implemented high-performance `Cache-Control` headers for static JS chunks and public assets (`max-age=31536000, immutable`).
 
