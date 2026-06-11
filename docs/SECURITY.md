@@ -26,7 +26,15 @@ Verdura's smart contracts are written in **Clarity**, a decidable, non-Turing-co
 
 ---
 
-## 3. Protocol Limitations & Invariants
+## 3. Immutability & Upgradeability
+
+To ensure maximum security and trust for user deposits:
+- **Immutable Smart Contracts**: Once deployed, the core logic of `savings-vault.clar`, `yield-router.clar`, and `savings-profile.clar` is fully immutable. There are no admin-controlled proxy configurations or upgrade vectors that would allow contract logic to be swapped out post-deployment.
+- **Admin Boundaries**: Admin capabilities are restricted solely to non-custodial parameters (such as pausing/resuming the DeFi yield routing or registering new token adapters). Admins cannot lock, access, or withdraw user principal funds at any point.
+
+---
+
+## 4. Protocol Limitations & Invariants
 
 ### Invariants
 The system enforces state invariants across contracts:
@@ -37,7 +45,7 @@ The system enforces state invariants across contracts:
 
 ---
 
-## 4. Reporting a Vulnerability
+## 5. Reporting a Vulnerability
 
 If you discover a security vulnerability within Verdura, please do not disclose it publicly. Contact the security team immediately:
 
