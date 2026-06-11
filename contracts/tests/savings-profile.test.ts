@@ -334,4 +334,41 @@ describe("savings-profile", () => {
     // Should fail with Clarity STX transfer error (err u3) because amount is 0
     expect(withdrawResult.result).toBeErr(Cl.uint(3));
   });
+
+  it("should increment streak on consecutive timely withdrawals within window", () => {
+    // 1. Create and complete vault 1
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault 1"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(1),
+      Cl.uint(1000)
+    ], wallet_1);
+    simnet.mineEmptyBlocks(144);
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(1)
+    ], wallet_1); 
+
+    // 2. Create and complete vault 2 within 2000 blocks
+    simnet.mineEmptyBlocks(2000); 
+    simnet.callPublicFn("savings-vault", "create-vault", [
+      Cl.stringAscii("Vault 2"),
+      Cl.uint(144),
+      Cl.bool(false)
+    ], wallet_1);
+    simnet.callPublicFn("savings-vault", "deposit", [
+      Cl.uint(2),
+      Cl.uint(1000)
+    ], wallet_1);
+    simnet.mineEmptyBlocks(144);
+    simnet.callPublicFn("savings-vault", "withdraw", [
+      Cl.uint(2)
+    ], wallet_1); 
+
+    // 3. Verify streak is 2
+    const streakResult = simnet.callReadOnlyFn("savings-profile", "get-savings-streak", [Cl.principal(wallet_1)], wallet_1);
+    expect(streakResult.result).toBeUint(2);
+  });
 });
