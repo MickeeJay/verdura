@@ -347,4 +347,23 @@ describe("savings-vault", () => {
     // Should return err-unauthorized (u100) since contract-caller is .proxy-mock, not wallet_1
     expect(result.result).toBeErr(Cl.uint(100));
   });
+
+  it("should respect the loop limitation and only return up to 50 active vaults in get-all-vaults-by-owner", () => {
+    // Create 51 vaults
+    for (let i = 1; i <= 51; i++) {
+      simnet.callPublicFn("savings-vault", "create-vault", [
+        Cl.stringAscii(`Vault ${i}`),
+        Cl.uint(144),
+        Cl.bool(false)
+      ], wallet_1);
+    }
+
+    const result = simnet.callReadOnlyFn("savings-vault", "get-all-vaults-by-owner", [
+      Cl.principal(wallet_1)
+    ], wallet_1);
+
+    // Should return a list with exactly 50 elements (1 to 50), leaving the 51st vault out
+    const expectedList = Array.from({ length: 50 }, (_, i) => Cl.uint(i + 1));
+    expect(result.result).toBeList(expectedList);
+  });
 });
